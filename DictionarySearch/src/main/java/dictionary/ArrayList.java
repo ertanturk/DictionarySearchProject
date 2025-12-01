@@ -78,6 +78,10 @@ public class ArrayList<T> implements Iterable<T> {
     size = 0;
   }
 
+  public boolean isEmpty() {
+    return size == 0;
+  }
+
   public void set(int index, T element) {
     if (index < 0 || index >= size) {
       throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
@@ -131,7 +135,7 @@ public class ArrayList<T> implements Iterable<T> {
     size = index;
   }
 
-  public void printList() {
+  public String toString() {
     String list = "";
     for (int i = 0; i < size; i++) {
       if (i == size - 1) {
@@ -140,7 +144,16 @@ public class ArrayList<T> implements Iterable<T> {
         list += array[i] + ", ";
       }
     }
-    System.out.println("[" + list + "]");
+    return "[" + list + "]";
+  }
+
+  public T[] toArray() {
+    @SuppressWarnings("unchecked")
+    T[] newArray = (T[]) new Object[size];
+    for (int i = 0; i < size; i++) {
+      newArray[i] = array[i];
+    }
+    return newArray;
   }
 
   @Override
