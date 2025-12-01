@@ -1,0 +1,94 @@
+# =========================
+# OS / Editor junk
+# =========================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+.nfs*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Editor backups / swap
+*.swp
+*.swo
+*.tmp
+*.bak
+*.orig
+*.rej
+
+# =========================
+# Java / Build tools
+# =========================
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+gradle-app.setting
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Eclipse
+.project
+.classpath
+.settings/
+.bin/
+
+# VS Code
+.vscode/
+.history/
+*.code-workspace
+
+# Logs
+logs/
+*.log
+hs_err_pid*
+replay_pid*
+
+# Coverage / test reports
+coverage/
+jacoco.exec
+*.ec
+*.lcov
+
+# Compiled class files
+*.class
+
+# =========================
+# Misc
+# =========================
+
+# Package archives
+*.jar
+*.war
+*.ear
+*.zip
+*.tar
+*.tar.gz
+
+# IDE-specific caches
+.cache/
+.idea_modules/
