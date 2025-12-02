@@ -74,7 +74,6 @@ public class Loader<T> {
     }
   }
 
-  @SuppressWarnings("unchecked")
   private void loadCsv() {
     if (destinationArrayList == null && destinationHashTable == null) {
       throw new IllegalStateException("No destination container provided.");

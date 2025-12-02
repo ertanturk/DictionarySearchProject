@@ -84,44 +84,6 @@ public class ArrayList<T> implements Iterable<T> {
     return ((Comparable<T>) element1).compareTo(element2);
   }
 
-  public void sort() {
-    if (size <= 1) {
-      return;
-    }
-
-    T pivot = array[size / 2];
-    ArrayList<T> less = new ArrayList<>();
-    ArrayList<T> equal = new ArrayList<>();
-    ArrayList<T> greater = new ArrayList<>();
-
-    for (int i = 0; i < size; i++) {
-      int cmp = compareTo(array[i], pivot);
-      if (cmp < 0) {
-        less.add(array[i]);
-      } else if (cmp == 0) {
-        equal.add(array[i]);
-      } else {
-        greater.add(array[i]);
-      }
-    }
-
-    less.sort();
-    greater.sort();
-
-    int index = 0;
-    for (int i = 0; i < less.size(); i++) {
-      array[index++] = less.get(i);
-    }
-    for (int i = 0; i < equal.size(); i++) {
-      array[index++] = equal.get(i);
-    }
-    for (int i = 0; i < greater.size(); i++) {
-      array[index++] = greater.get(i);
-    }
-
-    size = index;
-  }
-
   public String toString() {
     String list = "";
     for (int i = 0; i < size; i++) {
