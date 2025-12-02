@@ -2,6 +2,8 @@ package main.java.dictionary;
 
 import java.io.File;
 
+import main.java.performance.PerformanceTimer;
+
 public class LinearSearch implements Search {
   public int searchWord(ArrayList<String[]> dictionary, String target) {
     for (int i = 0; i < dictionary.size(); i++) {
@@ -11,13 +13,5 @@ public class LinearSearch implements Search {
       }
     }
     return -1;
-  }
-
-  public static void main(String[] args) {
-    ArrayList<String[]> dictionary = new ArrayList<>();
-    File dictionaryFile = new File("DictionarySearch/data/dict.csv");
-    Loader<String[]> loader = new Loader<>(dictionaryFile, dictionary);
-    loader.load();
-
   }
 }
