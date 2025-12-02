@@ -14,11 +14,13 @@ public class ArrayList<T> implements Iterable<T> {
     return size;
   }
 
+  public boolean isEmpty() {
+    return size == 0;
+  }
+
   // Methods
   public void add(T element) {
-    if (size == array.length) {
-      resize();
-    }
+    ensureCapacity(size + 1);
     array[size++] = element;
   }
 
@@ -26,9 +28,7 @@ public class ArrayList<T> implements Iterable<T> {
     if (index < 0 || index > size) {
       throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
     }
-    if (size == array.length) {
-      resize();
-    }
+    ensureCapacity(size + 1);
     for (int i = size; i > index; i--) {
       array[i] = array[i - 1];
     }
@@ -43,13 +43,11 @@ public class ArrayList<T> implements Iterable<T> {
     return array[index];
   }
 
-  @SuppressWarnings("unchecked")
-  private void resize() {
-    T[] newArray = (T[]) new Object[array.length * 2];
-    for (int i = 0; i < size; i++) {
-      newArray[i] = array[i];
+  public void set(int index, T element) {
+    if (index < 0 || index >= size) {
+      throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
     }
-    array = newArray;
+    array[index] = element;
   }
 
   public void remove(T element) {
@@ -76,17 +74,6 @@ public class ArrayList<T> implements Iterable<T> {
       array[i] = null;
     }
     size = 0;
-  }
-
-  public boolean isEmpty() {
-    return size == 0;
-  }
-
-  public void set(int index, T element) {
-    if (index < 0 || index >= size) {
-      throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
-    }
-    array[index] = element;
   }
 
   @SuppressWarnings("unchecked")
@@ -179,5 +166,21 @@ public class ArrayList<T> implements Iterable<T> {
         throw new UnsupportedOperationException("remove not supported");
       }
     };
+  }
+
+  @SuppressWarnings("unchecked")
+  public void ensureCapacity(int minCapacity) {
+    if (array.length >= minCapacity) {
+      return;
+    }
+    int newCapacity = array.length;
+    while (newCapacity < minCapacity) {
+      newCapacity *= 2;
+    }
+    T[] newArray = (T[]) new Object[newCapacity];
+    for (int i = 0; i < size; i++) {
+      newArray[i] = array[i];
+    }
+    array = newArray;
   }
 }
