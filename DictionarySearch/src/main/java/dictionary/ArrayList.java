@@ -145,4 +145,69 @@ public class ArrayList<T> implements Iterable<T> {
     }
     array = newArray;
   }
+
+  // Custom static method to sort dictionary with quicksort
+  public static void quicksort(ArrayList<String[]> list, int low, int high) {
+    if (low < high) {
+      int pivotIndex = partition(list, low, high);
+      quicksort(list, low, pivotIndex - 1);
+      quicksort(list, pivotIndex + 1, high);
+    }
+  }
+
+  private static int partition(ArrayList<String[]> list, int low, int high) {
+    String[] pivot = list.get(high);
+    int i = low - 1;
+
+    for (int j = low; j < high; j++) {
+      String[] current = list.get(j);
+      if (current.length > 0 && pivot.length > 0 && current[0].compareTo(pivot[0]) <= 0) {
+        i++;
+        swap(list, i, j);
+      }
+    }
+    swap(list, i + 1, high);
+    return i + 1;
+  }
+
+  private static void swap(ArrayList<String[]> list, int i, int j) {
+    String[] temp = list.get(i);
+    list.set(i, list.get(j));
+    list.set(j, temp);
+  }
+
+  // Custom static method to linear search dictionary
+  public static int linearSearch(ArrayList<String[]> list, String target) {
+    for (int i = 0; i < list.size(); i++) {
+      String[] entry = list.get(i);
+      if (entry.length > 0 && entry[0].equals(target)) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  // Custom static method to binary search dictionary
+  public static int binarySearch(ArrayList<String[]> list, String target) {
+    int left = 0;
+    int right = list.size() - 1;
+
+    while (left <= right) {
+      int mid = left + (right - left) / 2;
+      String[] midEntry = list.get(mid);
+      if (midEntry.length == 0) {
+        left = mid + 1;
+        continue;
+      }
+      int cmp = midEntry[0].compareTo(target);
+      if (cmp == 0) {
+        return mid;
+      } else if (cmp < 0) {
+        left = mid + 1;
+      } else {
+        right = mid - 1;
+      }
+    }
+    return -1;
+  }
 }

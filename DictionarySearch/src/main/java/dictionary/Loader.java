@@ -12,22 +12,22 @@ enum FileType {
   TXT
 }
 
-public class Loader<T> {
+public class Loader {
 
   private static final char DELIMITER = ',';
 
   private File source;
-  private ArrayList<T> destinationArrayList;
-  private HashTable destinationHashTable;
+  private ArrayList<String[]> destinationArrayList;
+  private HashTable<String, String> destinationHashTable;
   private final FileType fileType;
 
-  public Loader(File source, ArrayList<T> destinationArrayList) {
+  public Loader(File source, ArrayList<String[]> destinationArrayList) {
     this.source = source;
     this.destinationArrayList = destinationArrayList;
     this.fileType = determineFileType();
   }
 
-  public Loader(File source, HashTable destinationHashTable) {
+  public Loader(File source, HashTable<String, String> destinationHashTable) {
     this.source = source;
     this.destinationHashTable = destinationHashTable;
     this.fileType = determineFileType();
@@ -45,11 +45,11 @@ public class Loader<T> {
     return fileType;
   }
 
-  public ArrayList<T> getArrayDestination() {
+  public ArrayList<String[]> getArrayDestination() {
     return destinationArrayList;
   }
 
-  public HashTable getHashTableDestination() {
+  public HashTable<String, String> getHashTableDestination() {
     return destinationHashTable;
   }
 
@@ -106,7 +106,6 @@ public class Loader<T> {
     }
   }
 
-  @SuppressWarnings("unchecked")
   private void loadTxt() {
     if (destinationArrayList == null && destinationHashTable == null) {
       throw new IllegalStateException("No destination container provided.");
@@ -114,7 +113,7 @@ public class Loader<T> {
 
     try (BufferedReader reader = new BufferedReader(new FileReader(source))) {
       String line;
-      // int lineNumber = 0;
+      int lineNumber = 0;
 
       while ((line = reader.readLine()) != null) {
         String trimmed = line.trim();
@@ -123,13 +122,12 @@ public class Loader<T> {
         }
 
         if (destinationArrayList != null) {
-          destinationArrayList.add((T) trimmed);
+          destinationArrayList.add(new String[] { trimmed });
         }
-        /*
-         * if (destinationHashTable != null) {
-         * destinationHashTable.put("line_" + lineNumber++, trimmed);
-         * }
-         */
+
+        if (destinationHashTable != null) {
+          destinationHashTable.put("line_" + lineNumber++, trimmed);
+        }
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -146,7 +144,6 @@ public class Loader<T> {
     rowBuffer.clear();
   }
 
-  @SuppressWarnings("unchecked")
   private void storeCsvRow(ArrayList<String> rowBuffer) {
     String[] row = toStringArray(rowBuffer);
     if (row.length == 0) {
@@ -154,13 +151,17 @@ public class Loader<T> {
     }
 
     if (destinationArrayList != null) {
-      destinationArrayList.add((T) row);
+      destinationArrayList.add(row);
     }
-    /*
-     * if (destinationHashTable != null && row.length >= 2) {
-     * destinationHashTable.put(row[0], row[1]);
-     * }
-     */
+
+    if (destinationHashTable != null && row.length >= 2) {
+      String key = row[0];
+      StringBuilder valueBuilder = new StringBuilder(row[1]);
+      for (int i = 2; i < row.length; i++) {
+        valueBuilder.append(',').append(row[i]);
+      }
+      destinationHashTable.put(key, valueBuilder.toString());
+    }
   }
 
   private String convertField(ArrayList<Character> buffer) {
