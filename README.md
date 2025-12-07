@@ -176,21 +176,29 @@ To evaluate performance:
 ## 🗂️ Project Structure
 
 ```text
-src/main/java
-├── loader
-│   └── Loader.java
-├── utils
-│   ├── HashTable.java
-│   ├── Entry.java
-│   ├── LinkedList.java
-│   └── ArrayList.java
-├── search
-│   ├── LinearSearch.java
-│   └── BinarySearch.java
-├── performance
-│   └── PerformanceTimer.java
-└── ui
-    └── // During development
+DictionarySearch/
+├── data/
+│   ├── dict.csv          # 40,000+ word-definition pairs
+│   └── testWords.txt     # Test words for experiments
+└── src/
+    └── main/
+        └── java/
+            ├── loader/
+            │   └── Loader.java              # CSV/TXT file loader
+            ├── search/
+            │   ├── Search.java              # Search interface
+            │   ├── LinearSearch.java        # O(n) linear search
+            │   └── BinarySearch.java        # O(log n) binary search
+            ├── ui/
+            │   └── // CLI/GUI during development
+            └── utils/
+                ├── Entry.java               # Key-value pair node
+                ├── HashTable.java           # Custom hash table
+                ├── ArrayList.java           # Dynamic array
+                ├── LinkedList.java          # Linked list for chaining
+                └── analysis/
+                    ├── ExecutionTimeAnalyzer.java    # Performance measurement
+                    └── ExecutionTimeFormatter.java   # Result formatting
 ```
 
 ---
