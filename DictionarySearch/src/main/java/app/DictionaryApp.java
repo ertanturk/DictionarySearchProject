@@ -398,3 +398,313 @@ public class DictionaryApp extends JFrame {
     });
   }
 }
+/*
+ * import java.awt.BorderLayout;
+ * import java.awt.Color;
+ * import java.awt.Component;
+ * import java.awt.Dimension;
+ * import java.awt.FlowLayout;
+ * import java.awt.Font;
+ * import java.awt.Image;
+ * import java.awt.Toolkit;
+ * import java.awt.event.ActionEvent;
+ * import java.awt.event.ActionListener;
+ *
+ * import javax.swing.BorderFactory;
+ * import javax.swing.BoxLayout;
+ * import javax.swing.ButtonGroup;
+ * import javax.swing.JButton;
+ * import javax.swing.JFrame;
+ * import javax.swing.JLabel;
+ * import javax.swing.JOptionPane;
+ * import javax.swing.JPanel;
+ * import javax.swing.JTextArea;
+ * import javax.swing.JTextField;
+ * import javax.swing.JToggleButton;
+ * import javax.swing.SwingUtilities;
+ * import javax.swing.border.EmptyBorder;
+ * import javax.swing.border.LineBorder;
+ *
+ * public class DictionaryUI extends JFrame {
+ *
+ * // --- Components ---
+ * private JToggleButton btnLinear, btnBinary, btnHash;
+ * private ButtonGroup searchGroup; // For the one button selection
+ * private JTextField txtSearch;
+ * private JButton btnSearchAction;
+ *
+ * // Result Screen Components
+ * private JPanel resultPanel;
+ * private JLabel lblResultWord;
+ * private JTextArea txtDefinition;
+ * private JLabel lblExecutionTime;
+ *
+ * // --- COLORS ---
+ * private final Color COLOR_DARK_BLUE = new Color(20, 45, 85);
+ * private final Color COLOR_ACTIVE_BLUE = new Color(100, 180, 230); // Selected
+ * button color
+ * private final Color COLOR_YELLOW_BG = new Color(255, 245, 200);
+ *
+ * public DictionaryUI() {
+ * // Window Settings
+ * setTitle("Interactive Dictionary");
+ * Image icon = Toolkit.getDefaultToolkit().getImage("dictionary.png");
+ * setIconImage(icon);
+ * setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+ * setSize(600, 700);
+ * setLocationRelativeTo(null); // Open in the middle of the screen
+ * setLayout(new BorderLayout());
+ * getContentPane().setBackground(Color.WHITE);
+ *
+ * // Main Panel (Vertical alignment)
+ * JPanel mainPanel = new JPanel();
+ * mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+ * mainPanel.setBackground(Color.WHITE);
+ * mainPanel.setBorder(new EmptyBorder(30, 40, 30, 40));
+ *
+ * // 1. Title
+ * JLabel lblTitle = new JLabel("Interactive Dictionary Interface");
+ * lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 24));
+ * lblTitle.setForeground(COLOR_DARK_BLUE);
+ * lblTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+ *
+ * // 2. BUTONS (JToggleButton)
+ * JPanel pnlSearchTypes = new JPanel(new FlowLayout(FlowLayout.CENTER, 15,
+ * 20));
+ * pnlSearchTypes.setBackground(Color.WHITE);
+ *
+ * searchGroup = new ButtonGroup();
+ * // Create Toggle Buttons
+ * btnLinear = createToggleBtn("Linear Search");
+ * btnBinary = createToggleBtn("Binary Search");
+ * btnHash = createToggleBtn("Hash-Based Search");
+ *
+ * // Add Group (One selection only)
+ * searchGroup.add(btnLinear);
+ * searchGroup.add(btnBinary);
+ * searchGroup.add(btnHash);
+ *
+ * pnlSearchTypes.add(btnLinear);
+ * pnlSearchTypes.add(btnBinary);
+ * pnlSearchTypes.add(btnHash);
+ *
+ * // Linear is selected by default
+ * btnLinear.setSelected(true);
+ * updateButtonColors(); // Update colors
+ *
+ * // 3. SEARCH INPUT FIELD
+ * JPanel pnlInput = new JPanel(new BorderLayout(10, 0));
+ * pnlInput.setMaximumSize(new Dimension(600, 45));
+ * pnlInput.setBackground(Color.WHITE);
+ *
+ * txtSearch = new JTextField("Type a word...");
+ * txtSearch.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+ * txtSearch.setBorder(BorderFactory.createCompoundBorder(
+ * new LineBorder(Color.LIGHT_GRAY, 1),
+ * new EmptyBorder(5, 10, 5, 10)));
+ *
+ * btnSearchAction = new JButton("Search");
+ * btnSearchAction.setBackground(COLOR_DARK_BLUE);
+ * btnSearchAction.setForeground(Color.WHITE);
+ * btnSearchAction.setFont(new Font("Segoe UI", Font.BOLD, 14));
+ * btnSearchAction.setFocusPainted(false);
+ * btnSearchAction.setPreferredSize(new Dimension(100, 40));
+ *
+ * pnlInput.add(txtSearch, BorderLayout.CENTER);
+ * pnlInput.add(btnSearchAction, BorderLayout.EAST);
+ *
+ * // 4. Result Panel (Hide at start)
+ * resultPanel = new JPanel(new BorderLayout());
+ * resultPanel.setBackground(Color.WHITE);
+ * // Frame design: Space -> Dark Line -> Inner Space
+ * resultPanel.setBorder(BorderFactory.createCompoundBorder(
+ * new EmptyBorder(30, 0, 0, 0),
+ * BorderFactory.createCompoundBorder(
+ * new LineBorder(COLOR_DARK_BLUE, 3),
+ * new EmptyBorder(20, 20, 20, 20))));
+ *
+ * // Word Title (Blank starts)
+ * lblResultWord = new JLabel("");
+ * lblResultWord.setFont(new Font("Segoe UI", Font.BOLD, 28));
+ * lblResultWord.setForeground(COLOR_DARK_BLUE);
+ *
+ * // Content Area - Definition and Time
+ * JPanel pnlContent = new JPanel(new BorderLayout(0, 15));
+ * pnlContent.setBackground(Color.WHITE);
+ * pnlContent.setBorder(new EmptyBorder(20, 0, 0, 0));
+ *
+ * // Definition Area
+ * JPanel pnlDefinition = new JPanel(new BorderLayout());
+ * pnlDefinition.setBackground(Color.WHITE);
+ * JLabel lblDefTitle = new JLabel("Definition:");
+ * lblDefTitle.setFont(new Font("Segoe UI", Font.BOLD, 14));
+ * lblDefTitle.setForeground(COLOR_DARK_BLUE);
+ *
+ * txtDefinition = new JTextArea();
+ * txtDefinition.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+ * txtDefinition.setBackground(COLOR_YELLOW_BG);
+ * txtDefinition.setLineWrap(true);
+ * txtDefinition.setWrapStyleWord(true);
+ * txtDefinition.setEditable(false);
+ * txtDefinition.setBorder(new EmptyBorder(10, 10, 10, 10)); // Yellow box inner
+ * space
+ *
+ * // Spacer panel around yellow box
+ * JPanel yellowBoxWrapper = new JPanel(new BorderLayout());
+ * yellowBoxWrapper.add(txtDefinition);
+ * yellowBoxWrapper.setBorder(new EmptyBorder(5, 0, 0, 0));
+ *
+ * pnlDefinition.add(lblDefTitle, BorderLayout.NORTH);
+ * pnlDefinition.add(yellowBoxWrapper, BorderLayout.CENTER);
+ *
+ * // Time Area
+ * JPanel pnlTime = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+ * pnlTime.setBackground(Color.WHITE);
+ * JLabel lblTimeTitle = new JLabel("Execution Time: ");
+ * lblTimeTitle.setFont(new Font("Segoe UI", Font.BOLD, 14));
+ * lblTimeTitle.setForeground(COLOR_DARK_BLUE);
+ *
+ * lblExecutionTime = new JLabel("");
+ * lblExecutionTime.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+ * lblExecutionTime.setForeground(Color.DARK_GRAY);
+ *
+ * pnlTime.add(lblTimeTitle);
+ * pnlTime.add(lblExecutionTime);
+ *
+ * // Add Components to Content Panel
+ * pnlContent.add(pnlDefinition, BorderLayout.CENTER);
+ * pnlContent.add(pnlTime, BorderLayout.SOUTH);
+ *
+ * resultPanel.add(lblResultWord, BorderLayout.NORTH);
+ * resultPanel.add(pnlContent, BorderLayout.CENTER);
+ *
+ * // Set hide at start
+ * resultPanel.setVisible(false);
+ *
+ * // Adding to Main Panel
+ * mainPanel.add(lblTitle);
+ * mainPanel.add(pnlSearchTypes);
+ * mainPanel.add(pnlInput);
+ * mainPanel.add(resultPanel);
+ *
+ * add(mainPanel);
+ *
+ * // --- ActionListener (EVENTS) ---
+ *
+ * // Event that changes button colors (every button)
+ * ActionListener toggleListener = e -> updateButtonColors();
+ * btnLinear.addActionListener(toggleListener);
+ * btnBinary.addActionListener(toggleListener);
+ * btnHash.addActionListener(toggleListener);
+ *
+ * // SEARCH BUTTON LOGIC
+ * btnSearchAction.addActionListener(new ActionListener() {
+ *
+ * @Override
+ * public void actionPerformed(ActionEvent e) {
+ * performSearch(); // Calls the search method
+ * }
+ * });
+ * }
+ *
+ * // --- Methods ---
+ *
+ * // Toggle Button Generator
+ * private JToggleButton createToggleBtn(String text) {
+ * JToggleButton btn = new JToggleButton(text);
+ * btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
+ * btn.setFocusPainted(false);
+ * btn.setPreferredSize(new Dimension(150, 40));
+ * btn.setBorder(new LineBorder(COLOR_DARK_BLUE, 2));
+ * return btn;
+ * }
+ *
+ * // Makes whichever button is selected Blue and the others White
+ * private void updateButtonColors() {
+ * updateSingleBtnColor(btnLinear);
+ * updateSingleBtnColor(btnBinary);
+ * updateSingleBtnColor(btnHash);
+ * }
+ *
+ * private void updateSingleBtnColor(JToggleButton btn) {
+ * if (btn.isSelected()) {
+ * btn.setBackground(COLOR_ACTIVE_BLUE);
+ * btn.setForeground(Color.WHITE);
+ * btn.setBorder(new LineBorder(COLOR_ACTIVE_BLUE, 2));
+ * } else {
+ * btn.setBackground(Color.WHITE);
+ * btn.setForeground(COLOR_DARK_BLUE);
+ * btn.setBorder(new LineBorder(COLOR_DARK_BLUE, 2));
+ * }
+ * }
+ *
+ * // --- Main Search LOGIC ---
+ * private void performSearch() {
+ * String searchword = txtSearch.getText().trim();
+ *
+ * // Check Empty Input
+ * if (searchword.isEmpty() || searchword.equals("Type a word...")) {
+ * JOptionPane.showMessageDialog(this, "Please enter a word.");
+ * return;
+ * }
+ *
+ * String defres = "";
+ * String timeres = "";
+ *
+ * // Which Search Method is Selected
+ * if (btnLinear.isSelected()) {
+ * defres = linearSearchAlgorithm(searchword);
+ * timeres = "0.005 seconds";
+ *
+ * } else if (btnBinary.isSelected()) {
+ * defres = binarySearchAlgorithm(searchword);
+ * timeres = "0.002 seconds";
+ *
+ * } else if (btnHash.isSelected()) {
+ * defres = hashSearchAlgorithm(searchword);
+ * timeres = "0.001 seconds";
+ *
+ * } else {
+ * JOptionPane.showMessageDialog(this, "Please select a search method.");
+ * return;
+ * }
+ *
+ * // Update Interface
+ * lblResultWord.setText(searchword.toUpperCase());
+ * txtDefinition.setText(defres);
+ * lblExecutionTime.setText(timeres);
+ *
+ * // Make visible
+ * resultPanel.setVisible(true);
+ * revalidate(); // Refresh screen
+ * repaint();
+ * }
+ *
+ * // =====================================================================
+ *
+ * public String linearSearchAlgorithm(String word) {
+ * // Kelimeyi bulamazsan "Words not found" gibib bir şey döndür.
+ * return "Linear Search '" + word + "'searched.\n" +
+ * "LINEAR .... ...";
+ * }
+ *
+ * public String binarySearchAlgorithm(String word) {
+ * // Not: Binary search için listenin sıralı olması gerekir.
+ * return "Binary Search '" + word + "' searched.\n" +
+ * "Binary .... ..";
+ * }
+ *
+ * public String hashSearchAlgorithm(String word) {
+ * return "Hash-Based Search '" + word + "' searched.\n" +
+ * "HASH .... .";
+ * }
+ *
+ * public static void main(String[] args) {
+ * // Start the UI
+ * SwingUtilities.invokeLater(() -> {
+ * DictionaryUI frame = new DictionaryUI();
+ * frame.setVisible(true);
+ * });
+ * }
+ * }
+ */
