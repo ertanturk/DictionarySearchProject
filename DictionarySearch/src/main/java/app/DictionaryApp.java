@@ -71,11 +71,11 @@ public class DictionaryApp extends JFrame {
   private JPanel suggestionsListPanel;
 
   // --- COLORS ---
-  private final Color COLOR_DARK_BLUE = new Color(30, 58, 138); // Deeper blue
-  private final Color COLOR_ACTIVE_BLUE = new Color(59, 130, 246); // Brighter blue
-  private final Color COLOR_YELLOW_BG = new Color(254, 249, 195); // Softer yellow
-  private final Color COLOR_SUGGESTION_BG = new Color(239, 246, 255); // Lighter blue
-  private final Color COLOR_SUGGESTION_HOVER = new Color(219, 234, 254); // Soft hover
+  private final Color COLOR_DARK_BLUE = new Color(28, 45, 89); // Deep navy
+  private final Color COLOR_ACTIVE_BLUE = new Color(82, 123, 202); // Soft slate blue
+  private final Color COLOR_YELLOW_BG = new Color(248, 244, 229); // Warm ivory
+  private final Color COLOR_SUGGESTION_BG = new Color(236, 240, 245); // Light gray-blue
+  private final Color COLOR_SUGGESTION_HOVER = new Color(219, 226, 235); // Gentle hover tone
 
   public DictionaryApp() {
     loadCustomFonts();
@@ -88,7 +88,7 @@ public class DictionaryApp extends JFrame {
       // Load Geist Mono Bold
       Font geistBold = Font.createFont(Font.TRUETYPE_FONT,
           new File("DictionarySearch/fonts/GeistMono-Bold.ttf"));
-      geistMonoBold = geistBold.deriveFont(Font.BOLD, 14f);
+      geistMonoBold = geistBold.deriveFont(Font.BOLD, 16f);
 
       // Register fonts with GraphicsEnvironment
       GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -98,7 +98,7 @@ public class DictionaryApp extends JFrame {
     } catch (FontFormatException | IOException e) {
       System.err.println("Error loading custom fonts: " + e.getMessage());
       // Fallback to default font
-      geistMonoBold = new Font("Monospaced", Font.BOLD, 14);
+      geistMonoBold = new Font("Monospaced", Font.BOLD, 16);
     }
   }
 
@@ -167,7 +167,7 @@ public class DictionaryApp extends JFrame {
 
     // 1. Title
     JLabel lblTitle = new JLabel("Interactive Dictionary Interface");
-    lblTitle.setFont(geistMonoBold.deriveFont(24f));
+    lblTitle.setFont(geistMonoBold.deriveFont(28f));
     lblTitle.setForeground(COLOR_DARK_BLUE);
     lblTitle.setHorizontalAlignment(JLabel.CENTER);
 
@@ -176,7 +176,7 @@ public class DictionaryApp extends JFrame {
     titlePanel.add(lblTitle);
 
     // 2. BUTTONS (JToggleButton)
-    JPanel pnlSearchTypes = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 20));
+    JPanel pnlSearchTypes = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 30));
     pnlSearchTypes.setBackground(Color.WHITE);
 
     searchGroup = new ButtonGroup();
@@ -206,7 +206,7 @@ public class DictionaryApp extends JFrame {
     pnlInput.setBorder(new EmptyBorder(10, 0, 20, 0));
 
     txtSearch = new JTextField("Type a word...");
-    txtSearch.setFont(geistMonoBold.deriveFont(Font.PLAIN, 15f));
+    txtSearch.setFont(geistMonoBold.deriveFont(Font.PLAIN, 16f));
     txtSearch.setBorder(BorderFactory.createCompoundBorder(
         new LineBorder(new Color(203, 213, 225), 2),
         new EmptyBorder(8, 12, 8, 12)));
@@ -214,9 +214,9 @@ public class DictionaryApp extends JFrame {
     btnSearchAction = new JButton("Search");
     btnSearchAction.setBackground(COLOR_DARK_BLUE);
     btnSearchAction.setForeground(Color.WHITE);
-    btnSearchAction.setFont(geistMonoBold.deriveFont(13f));
+    btnSearchAction.setFont(geistMonoBold.deriveFont(15f));
     btnSearchAction.setFocusPainted(false);
-    btnSearchAction.setPreferredSize(new Dimension(110, 45));
+    btnSearchAction.setPreferredSize(new Dimension(130, 45));
     btnSearchAction.setCursor(new Cursor(Cursor.HAND_CURSOR));
     btnSearchAction.setBorder(BorderFactory.createEmptyBorder());
 
@@ -243,7 +243,7 @@ public class DictionaryApp extends JFrame {
 
     // Word Title (Blank at start)
     lblResultWord = new JLabel("");
-    lblResultWord.setFont(geistMonoBold.deriveFont(26f));
+    lblResultWord.setFont(geistMonoBold.deriveFont(28f));
     lblResultWord.setForeground(COLOR_DARK_BLUE);
 
     // Content Area - Definition and Time
@@ -256,11 +256,11 @@ public class DictionaryApp extends JFrame {
     pnlDefinition.setBackground(Color.WHITE);
 
     JLabel lblDefTitle = new JLabel("Definition:");
-    lblDefTitle.setFont(geistMonoBold.deriveFont(14f));
+    lblDefTitle.setFont(geistMonoBold.deriveFont(15f));
     lblDefTitle.setForeground(COLOR_DARK_BLUE);
 
     txtDefinition = new JTextArea();
-    txtDefinition.setFont(geistMonoBold.deriveFont(Font.PLAIN, 13f));
+    txtDefinition.setFont(geistMonoBold.deriveFont(Font.PLAIN, 14f));
     txtDefinition.setBackground(COLOR_YELLOW_BG);
     txtDefinition.setLineWrap(true);
     txtDefinition.setWrapStyleWord(true);
@@ -288,11 +288,11 @@ public class DictionaryApp extends JFrame {
     pnlTime.setBackground(Color.WHITE);
 
     JLabel lblTimeTitle = new JLabel("Execution Time: ");
-    lblTimeTitle.setFont(geistMonoBold.deriveFont(13f));
+    lblTimeTitle.setFont(geistMonoBold.deriveFont(14f));
     lblTimeTitle.setForeground(COLOR_DARK_BLUE);
 
     lblExecutionTime = new JLabel("");
-    lblExecutionTime.setFont(geistMonoBold.deriveFont(Font.PLAIN, 13f));
+    lblExecutionTime.setFont(geistMonoBold.deriveFont(Font.PLAIN, 14f));
     lblExecutionTime.setForeground(new Color(100, 116, 139));
 
     pnlTime.add(lblTimeTitle);
@@ -319,7 +319,7 @@ public class DictionaryApp extends JFrame {
     suggestionsPanel.setPreferredSize(new Dimension(220, 0));
 
     JLabel lblSuggestionsTitle = new JLabel("Suggestions");
-    lblSuggestionsTitle.setFont(geistMonoBold.deriveFont(14f));
+    lblSuggestionsTitle.setFont(geistMonoBold.deriveFont(15f));
     lblSuggestionsTitle.setForeground(COLOR_DARK_BLUE);
     lblSuggestionsTitle.setBorder(new EmptyBorder(0, 0, 10, 0));
 
@@ -370,9 +370,9 @@ public class DictionaryApp extends JFrame {
   // Toggle Button Generator
   private JToggleButton createToggleBtn(String text) {
     JToggleButton btn = new JToggleButton(text);
-    btn.setFont(geistMonoBold.deriveFont(14f));
+    btn.setFont(geistMonoBold.deriveFont(16f));
     btn.setFocusPainted(false);
-    btn.setPreferredSize(new Dimension(160, 42));
+    btn.setPreferredSize(new Dimension(200, 42));
     btn.setBorder(new LineBorder(COLOR_DARK_BLUE, 2));
     btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
     return btn;
@@ -503,7 +503,7 @@ public class DictionaryApp extends JFrame {
       suggestionsPanel.setVisible(true);
     } else {
       JLabel noSuggestions = new JLabel("No suggestions");
-      noSuggestions.setFont(geistMonoBold.deriveFont(Font.PLAIN, 13f));
+      noSuggestions.setFont(geistMonoBold.deriveFont(Font.PLAIN, 14f));
       noSuggestions.setForeground(new Color(148, 163, 184));
       noSuggestions.setAlignmentX(JLabel.LEFT_ALIGNMENT);
       suggestionsListPanel.add(noSuggestions);
@@ -525,7 +525,7 @@ public class DictionaryApp extends JFrame {
     panel.setPreferredSize(new Dimension(190, 36));
 
     JLabel label = new JLabel(word);
-    label.setFont(geistMonoBold.deriveFont(Font.PLAIN, 13f));
+    label.setFont(geistMonoBold.deriveFont(Font.PLAIN, 14f));
     label.setForeground(COLOR_DARK_BLUE);
 
     panel.add(label, BorderLayout.CENTER);
