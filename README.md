@@ -219,11 +219,13 @@ DictionarySearch/
     └── main/
         └── java/
             ├── app/
+                ├── icon.png
             │   └── DictionaryApp.java           # Main GUI application
             ├── loader/
             │   └── Loader.java                  # CSV/TXT file loader
             ├── search/
             │   ├── Search.java                  # Search interface
+                ├── HashSearch.java              # O(1) hash table search
             │   ├── LinearSearch.java            # O(n) linear search
             │   └── BinarySearch.java            # O(log n) binary search
             └── utils/
