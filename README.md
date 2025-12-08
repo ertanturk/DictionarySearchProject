@@ -3,7 +3,7 @@
 **DictionarySearch** is a **Data Structures and Algorithms (DSA) term project** implemented in **Java**.
 
 The project explores how different **data structures** and **search algorithms** impact performance when searching for words in a large dictionary dataset.
-All core data structures are implemented **from scratch**, without using Java’s built-in collection framework (`java.util`), as required by the course.
+All core data structures are implemented **from scratch**, without using Java's built-in collection framework (`java.util`), as required by the course.
 
 ---
 
@@ -15,6 +15,7 @@ This project aims to:
 - ✅ Compare performance across different data structures
 - ✅ Analyze experimental results using **time complexity theory**
 - ✅ Gain practical experience implementing data structures internally
+- ✅ Build an interactive GUI application for dictionary lookup
 
 ---
 
@@ -110,6 +111,37 @@ All implementations use **Java Generics** to ensure type safety.
 
 ---
 
+## ✨ Features
+
+### 🎨 Interactive GUI Application
+
+- Built with **Java Swing**
+- Modern, user-friendly interface with custom **Geist Mono** font
+- Real-time word search with instant results
+
+### 🔍 Smart Word Search
+
+- User can select between **Binary Search** or **Linear Search** algorithms
+- Displays word definitions from the dictionary
+- Shows **execution time** for performance comparison
+
+### 💡 Word Suggestions
+
+- Suggests similar words when search fails
+- Uses intelligent matching algorithm:
+  - Words with **1 character difference** (edit distance = 1)
+  - Words that **start with** the search query
+- Displays up to **8 suggestions**
+- Click on suggestions to instantly search for them
+
+### ⏱️ Performance Analysis
+
+- **ExecutionTimeAnalyzer** — measures search performance in nanoseconds
+- **ExecutionTimeFormatter** — formats timing results with configurable precision
+- Real-time display of algorithm execution time
+
+---
+
 ## 📂 Dataset
 
 - **File:** `dict.csv`
@@ -178,28 +210,55 @@ To evaluate performance:
 ```text
 DictionarySearch/
 ├── data/
-│   ├── dict.csv          # 40,000+ word-definition pairs
-│   └── testWords.txt     # Test words for experiments
+│   ├── dict.csv                    # 40,000+ word-definition pairs
+│   └── testWords.txt               # Test words for experiments
+├── fonts/
+│   ├── GeistMono-Regular.ttf       # Custom UI font
+│   └── GeistMono-Bold.ttf          # Bold variant
 └── src/
     └── main/
         └── java/
+            ├── app/
+            │   └── DictionaryApp.java           # Main GUI application
             ├── loader/
-            │   └── Loader.java              # CSV/TXT file loader
+            │   └── Loader.java                  # CSV/TXT file loader
             ├── search/
-            │   ├── Search.java              # Search interface
-            │   ├── LinearSearch.java        # O(n) linear search
-            │   └── BinarySearch.java        # O(log n) binary search
-            ├── ui/
-            │   └── // CLI/GUI during development
+            │   ├── Search.java                  # Search interface
+            │   ├── LinearSearch.java            # O(n) linear search
+            │   └── BinarySearch.java            # O(log n) binary search
             └── utils/
-                ├── Entry.java               # Key-value pair node
-                ├── HashTable.java           # Custom hash table
-                ├── ArrayList.java           # Dynamic array
-                ├── LinkedList.java          # Linked list for chaining
-                └── analysis/
-                    ├── ExecutionTimeAnalyzer.java    # Performance measurement
-                    └── ExecutionTimeFormatter.java   # Result formatting
+                ├── Entry.java                   # Key-value pair node
+                ├── HashTable.java               # Custom hash table
+                ├── ArrayList.java               # Dynamic array
+                ├── LinkedList.java              # Linked list for chaining
+                ├── analysis/
+                │   ├── ExecutionTimeAnalyzer.java    # Performance measurement
+                │   └── ExecutionTimeFormatter.java   # Result formatting
+                └── features/
+                    └── WordSuggester.java       # Smart word suggestions
 ```
+
+---
+
+## 🚀 How to Run
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone <repository-url>
+   cd DictionarySearchProject/DictionarySearch
+   ```
+
+2. **Compile the project:**
+
+   ```bash
+   javac -d bin src/main/java/**/*.java
+   ```
+
+3. **Run the application:**
+   ```bash
+   java -cp bin main.java.app.DictionaryApp
+   ```
 
 ---
 
@@ -215,6 +274,16 @@ Implementing these structures manually revealed real-world challenges such as:
 - Load factor tuning
 - Rehashing overhead
 - Edge cases in CSV parsing
+- GUI responsiveness with large datasets
+
+---
+
+## 🛠️ Technologies Used
+
+- **Language:** Java (JDK 11+)
+- **GUI Framework:** Java Swing
+- **Font:** Geist Mono (custom embedded font)
+- **Build Tool:** Manual compilation (can be migrated to Maven/Gradle)
 
 ---
 
@@ -226,6 +295,7 @@ Team members contributed to:
 - Data structure design and implementation
 - Algorithm development
 - File parsing and loading logic
+- GUI design and implementation
 - Performance testing and analysis
 - Debugging and validation
 

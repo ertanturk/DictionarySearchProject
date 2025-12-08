@@ -7,7 +7,11 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -42,6 +46,10 @@ public class DictionaryApp extends JFrame {
   private BinarySearch<String> binarySearch;
   private LinearSearch<String> linearSearch;
 
+  // Custom fonts
+  private Font geistMonoRegular;
+  private Font geistMonoBold;
+
   // UI Components
   private JTextField searchField;
   private JButton searchButton;
@@ -51,8 +59,35 @@ public class DictionaryApp extends JFrame {
   private JComboBox<String> searchMethodCombo;
 
   public DictionaryApp() {
+    loadCustomFonts();
     initializeData();
     initializeUI();
+  }
+
+  private void loadCustomFonts() {
+    try {
+      // Load Geist Mono Regular
+      Font geistRegular = Font.createFont(Font.TRUETYPE_FONT,
+          new File("DictionarySearch/fonts/GeistMono-Regular.ttf"));
+      geistMonoRegular = geistRegular.deriveFont(Font.PLAIN, 15f);
+
+      // Load Geist Mono Bold
+      Font geistBold = Font.createFont(Font.TRUETYPE_FONT,
+          new File("DictionarySearch/fonts/GeistMono-Bold.ttf"));
+      geistMonoBold = geistBold.deriveFont(Font.BOLD, 16f);
+
+      // Register fonts with GraphicsEnvironment
+      GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+      ge.registerFont(geistRegular);
+      ge.registerFont(geistBold);
+
+      System.out.println("Custom fonts loaded successfully");
+    } catch (FontFormatException | IOException e) {
+      System.err.println("Error loading custom fonts: " + e.getMessage());
+      // Fallback to default fonts
+      geistMonoRegular = new Font("Monospaced", Font.PLAIN, 14);
+      geistMonoBold = new Font("Monospaced", Font.BOLD, 14);
+    }
   }
 
   private void initializeData() {
@@ -130,7 +165,7 @@ public class DictionaryApp extends JFrame {
 
     // Title
     JLabel titleLabel = new JLabel("Dictionary");
-    titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+    titleLabel.setFont(geistMonoBold.deriveFont(24f));
     titleLabel.setForeground(new Color(25, 25, 112));
 
     JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -144,18 +179,18 @@ public class DictionaryApp extends JFrame {
     searchPanel.setOpaque(false);
 
     searchField = new JTextField();
-    searchField.setFont(new Font("Arial", Font.PLAIN, 16));
+    searchField.setFont(geistMonoRegular.deriveFont(16f));
     searchField.setBorder(BorderFactory.createCompoundBorder(
         BorderFactory.createLineBorder(new Color(100, 149, 237), 2),
         new EmptyBorder(8, 10, 8, 10)));
 
     // Search method combo box
     searchMethodCombo = new JComboBox<>(new String[] { "Binary Search", "Linear Search" });
-    searchMethodCombo.setFont(new Font("Arial", Font.PLAIN, 14));
+    searchMethodCombo.setFont(geistMonoRegular);
     searchMethodCombo.setPreferredSize(new Dimension(150, 40));
 
     searchButton = new JButton("Search");
-    searchButton.setFont(new Font("Arial", Font.BOLD, 14));
+    searchButton.setFont(geistMonoBold);
     searchButton.setBackground(new Color(100, 149, 237));
     searchButton.setForeground(Color.WHITE);
     searchButton.setFocusPainted(false);
@@ -184,12 +219,12 @@ public class DictionaryApp extends JFrame {
             "Definition:",
             TitledBorder.LEFT,
             TitledBorder.TOP,
-            new Font("Arial", Font.BOLD, 14),
+            geistMonoBold,
             new Color(25, 25, 112)),
         new EmptyBorder(10, 10, 10, 10)));
 
     definitionArea = new JTextArea();
-    definitionArea.setFont(new Font("Arial", Font.PLAIN, 14));
+    definitionArea.setFont(geistMonoRegular);
     definitionArea.setLineWrap(true);
     definitionArea.setWrapStyleWord(true);
     definitionArea.setEditable(false);
@@ -212,7 +247,7 @@ public class DictionaryApp extends JFrame {
             "Suggested Words:",
             TitledBorder.LEFT,
             TitledBorder.TOP,
-            new Font("Arial", Font.BOLD, 14),
+            geistMonoBold,
             new Color(25, 25, 112)),
         new EmptyBorder(10, 10, 10, 10)));
 
@@ -234,7 +269,7 @@ public class DictionaryApp extends JFrame {
     panel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
     executionTimeLabel = new JLabel("Execution Time: Ready");
-    executionTimeLabel.setFont(new Font("Arial", Font.BOLD, 14));
+    executionTimeLabel.setFont(geistMonoBold);
     executionTimeLabel.setForeground(new Color(25, 25, 112));
 
     panel.add(executionTimeLabel, BorderLayout.WEST);
@@ -319,7 +354,7 @@ public class DictionaryApp extends JFrame {
       for (int i = 0; i < maxSuggestions; i++) {
         String suggestion = suggestions.get(i);
         JButton suggestionButton = new JButton(suggestion);
-        suggestionButton.setFont(new Font("Arial", Font.PLAIN, 13));
+        suggestionButton.setFont(geistMonoRegular.deriveFont(13f));
         suggestionButton.setBackground(new Color(173, 216, 230));
         suggestionButton.setForeground(new Color(25, 25, 112));
         suggestionButton.setFocusPainted(false);
@@ -341,7 +376,7 @@ public class DictionaryApp extends JFrame {
       }
     } else {
       JLabel noSuggestionsLabel = new JLabel("No suggestions available");
-      noSuggestionsLabel.setFont(new Font("Arial", Font.ITALIC, 13));
+      noSuggestionsLabel.setFont(geistMonoRegular.deriveFont(Font.ITALIC, 13f));
       noSuggestionsLabel.setForeground(Color.GRAY);
       suggestionsPanel.add(noSuggestionsLabel);
     }
