@@ -4,11 +4,11 @@ public class ExecutionTimeAnalyzer {
   private long startTime;
   private long endTime;
 
-  private void start() {
+  public void start() {
     this.startTime = System.nanoTime();
   }
 
-  private void stop() {
+  public void stop() {
     this.endTime = System.nanoTime();
   }
 

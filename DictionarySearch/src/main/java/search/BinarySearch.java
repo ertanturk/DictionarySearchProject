@@ -20,4 +20,40 @@ public class BinarySearch<T extends Comparable<T>> implements Search<T> {
     }
     return -1;
   }
+
+  public void sort(T[] array, int left, int right) {
+    if (array == null || array.length == 0) {
+      return;
+    }
+
+    if (left >= right) {
+      return;
+    }
+
+    T pivot = array[left + (right - left) / 2];
+    int i = left;
+    int j = right;
+    while (i <= j) {
+      while (array[i].compareTo(pivot) < 0) {
+        i++;
+      }
+      while (array[j].compareTo(pivot) > 0) {
+        j--;
+      }
+      if (i <= j) {
+        T temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+        i++;
+        j--;
+      }
+    }
+    if (left < j) {
+      sort(array, left, j);
+    }
+
+    if (right > i) {
+      sort(array, i, right);
+    }
+  }
 }
