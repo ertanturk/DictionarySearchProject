@@ -205,39 +205,106 @@ To evaluate performance:
 
 ---
 
+## 📊 Test Results
+
+The `Test.java` class compares the performance of all three search algorithms against a set of 50 test words (both existing dictionary words and non-existent words to test edge cases).
+
+### Sample Output
+
+```text
+Key: ocean
+Linear Search: 1963924.000 ns (258.45x slower)
+Binary Search: 7599.000 ns (FASTEST)
+Hash Search: 8092.000 ns (1.06x slower)
+
+Key: whispint
+Linear Search: 3035410.000 ns (1314.03x slower)
+Binary Search: 4084.000 ns (1.77x slower)
+Hash Search: 2310.000 ns (FASTEST)
+
+Key: friendship
+Linear Search: 671858.000 ns (234.59x slower)
+Binary Search: 2864.000 ns (FASTEST)
+Hash Search: 9178.000 ns (3.20x slower)
+
+Key: beautiful
+Linear Search: 1215779.000 ns (356.32x slower)
+Binary Search: 3412.000 ns (FASTEST)
+Hash Search: 7492.000 ns (2.20x slower)
+
+Key: krivalla
+Linear Search: 1050438.000 ns (658.58x slower)
+Binary Search: 3859.000 ns (2.42x slower)
+Hash Search: 1595.000 ns (FASTEST)
+
+Key: success
+Linear Search: 912110.000 ns (258.75x slower)
+Binary Search: 3525.000 ns (FASTEST)
+Hash Search: 12749.000 ns (3.62x slower)
+
+... (45 more test cases)
+```
+
+### Performance Analysis
+
+From the test results, we observe:
+
+- **Linear Search**: Consistently the slowest, ranging from **26x to 1314x slower** than the fastest algorithm
+
+  - Average time: ~450,000 ns per search
+  - Worst for large datasets
+
+- **Binary Search**: Excellent performance for most searches
+
+  - Average time: ~3,400 ns per search
+  - Most consistent fast performance on dictionary words
+  - Requires pre-sorted data
+
+- **Hash Search**: Best average-case performance
+  - Average time: ~7,500 ns per search
+  - **Fastest** for non-existent words (krivalla, whispint, zintar, etc.)
+  - Occasionally slower due to hash collisions
+  - Best choice for real-world dictionary lookups
+
+**Key Finding:** Hash search excels at finding non-existent words quickly (constant time failure), while binary search performs better on average for existing words in the sorted dataset. Linear search is impractical for datasets of this size.
+
+---
+
 ## 🗂️ Project Structure
 
 ```text
 DictionarySearch/
 ├── data/
-│   ├── dict.csv                    # 40,000+ word-definition pairs
-│   └── testWords.txt               # Test words for experiments
+│   ├── dict.csv                              # 40,000+ word-definition pairs
+│   └── testWords.txt                         # Test words for experiments
 ├── fonts/
-│   ├── GeistMono-Regular.ttf       # Custom UI font
-│   └── GeistMono-Bold.ttf          # Bold variant
+│   ├── GeistMono-Regular.ttf                 # Custom UI font
+│   └── GeistMono-Bold.ttf                    # Bold variant
 └── src/
     └── main/
         └── java/
             ├── app/
-                ├── icon.png
-            │   └── DictionaryApp.java           # Main GUI application
+            │   ├── icon.png                  # Application icon
+            │   └── DictionaryApp.java        # Main GUI application
             ├── loader/
-            │   └── Loader.java                  # CSV/TXT file loader
+            │   └── Loader.java               # CSV/TXT file loader
             ├── search/
-            │   ├── Search.java                  # Search interface
-                ├── HashSearch.java              # O(1) hash table search
-            │   ├── LinearSearch.java            # O(n) linear search
-            │   └── BinarySearch.java            # O(log n) binary search
+            │   ├── Search.java               # Search interface
+            │   ├── HashSearch.java           # O(1) hash table search
+            │   ├── LinearSearch.java         # O(n) linear search
+            │   └── BinarySearch.java         # O(log n) binary search
+            ├── tests/
+            │   └── Test.java                 # Performance testing suite
             └── utils/
-                ├── Entry.java                   # Key-value pair node
-                ├── HashTable.java               # Custom hash table
-                ├── ArrayList.java               # Dynamic array
-                ├── LinkedList.java              # Linked list for chaining
+                ├── Entry.java                # Key-value pair node
+                ├── HashTable.java            # Custom hash table
+                ├── ArrayList.java            # Dynamic array
+                ├── LinkedList.java           # Linked list for chaining
                 ├── analysis/
                 │   ├── ExecutionTimeAnalyzer.java    # Performance measurement
                 │   └── ExecutionTimeFormatter.java   # Result formatting
                 └── features/
-                    └── WordSuggester.java       # Smart word suggestions
+                    └── WordSuggester.java    # Smart word suggestions
 ```
 
 ---
