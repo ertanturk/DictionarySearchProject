@@ -314,7 +314,7 @@ DictionarySearch/
 1. **Clone the repository:**
 
    ```bash
-   git clone <repository-url>
+   git clone <https://github.com/ertanturk/DictionarySearchProject>
    cd DictionarySearchProject/DictionarySearch
    ```
 
@@ -351,8 +351,6 @@ Implementing these structures manually revealed real-world challenges such as:
 
 - **Language:** Java (JDK 11+)
 - **GUI Framework:** Java Swing
-- **Font:** Geist Mono (custom embedded font)
-- **Build Tool:** Manual compilation (can be migrated to Maven/Gradle)
 
 ---
 
