@@ -213,60 +213,88 @@ The `Test.java` class compares the performance of all three search algorithms ag
 
 ```text
 Key: ocean
-Linear Search: 1963924.000 ns (258.45x slower)
-Binary Search: 7599.000 ns (FASTEST)
-Hash Search: 8092.000 ns (1.06x slower)
+Linear Search: 3987520.000 ns (339.42x slower)
+Binary Search: 11748.000 ns (FASTEST)
+Hash Search: 13431.000 ns (1.14x slower)
 
 Key: whispint
-Linear Search: 3035410.000 ns (1314.03x slower)
-Binary Search: 4084.000 ns (1.77x slower)
-Hash Search: 2310.000 ns (FASTEST)
+Linear Search: 5351093.000 ns (1593.54x slower)
+Binary Search: 4962.000 ns (1.48x slower)
+Hash Search: 3358.000 ns (FASTEST)
 
 Key: friendship
-Linear Search: 671858.000 ns (234.59x slower)
-Binary Search: 2864.000 ns (FASTEST)
-Hash Search: 9178.000 ns (3.20x slower)
+Linear Search: 883127.000 ns (178.99x slower)
+Binary Search: 4934.000 ns (FASTEST)
+Hash Search: 9563.000 ns (1.94x slower)
 
 Key: beautiful
-Linear Search: 1215779.000 ns (356.32x slower)
-Binary Search: 3412.000 ns (FASTEST)
-Hash Search: 7492.000 ns (2.20x slower)
+Linear Search: 2148806.000 ns (261.83x slower)
+Binary Search: 8207.000 ns (FASTEST)
+Hash Search: 11385.000 ns (1.39x slower)
 
 Key: krivalla
-Linear Search: 1050438.000 ns (658.58x slower)
-Binary Search: 3859.000 ns (2.42x slower)
-Hash Search: 1595.000 ns (FASTEST)
+Linear Search: 1822947.000 ns (701.94x slower)
+Binary Search: 5617.000 ns (2.16x slower)
+Hash Search: 2597.000 ns (FASTEST)
 
 Key: success
-Linear Search: 912110.000 ns (258.75x slower)
-Binary Search: 3525.000 ns (FASTEST)
-Hash Search: 12749.000 ns (3.62x slower)
+Linear Search: 1783707.000 ns (285.71x slower)
+Binary Search: 6243.000 ns (FASTEST)
+Hash Search: 13600.000 ns (2.18x slower)
 
-... (45 more test cases)
+Key: triangle
+Linear Search: 896120.000 ns (156.86x slower)
+Binary Search: 5713.000 ns (FASTEST)
+Hash Search: 58804.000 ns (10.29x slower)
+
+Key: computer
+Linear Search: 320253.000 ns (29.82x slower)
+Binary Search: 21157.000 ns (1.97x slower)
+Hash Search: 10738.000 ns (FASTEST)
+
+Key: bicycle
+Linear Search: 270160.000 ns (35.32x slower)
+Binary Search: 17604.000 ns (2.30x slower)
+Hash Search: 7649.000 ns (FASTEST)
+
+... (41 more test cases)
+
+Overall Average Times for Searches: (50 test words) (ns)
+Linear Search: 861082.000 ns (143.75x slower)
+Binary Search: 5990.000 ns (FASTEST)
+Hash Search: 12294.000 ns (2.05x slower)
 ```
 
 ### Performance Analysis
 
-From the test results, we observe:
+From the test results across 50 test words (mix of dictionary words and non-existent words), we observe:
 
-- **Linear Search**: Consistently the slowest, ranging from **26x to 1314x slower** than the fastest algorithm
+- **Linear Search**: Consistently the slowest algorithm
 
-  - Average time: ~450,000 ns per search
-  - Worst for large datasets
+  - Average time: **861,082 ns** (~0.86 ms) per search
+  - Ranges from **30x to 1594x slower** than the fastest algorithm
+  - Performance degrades significantly with dataset size
+  - Impractical for real-world dictionary lookups
 
-- **Binary Search**: Excellent performance for most searches
+- **Binary Search**: Best overall performance
 
-  - Average time: ~3,400 ns per search
-  - Most consistent fast performance on dictionary words
-  - Requires pre-sorted data
+  - Average time: **5,990 ns** (~6 μs) per search
+  - Most consistent and fastest for the majority of test cases
+  - Requires pre-sorted data (one-time sorting cost)
+  - Optimal for sorted dictionary datasets
 
-- **Hash Search**: Best average-case performance
-  - Average time: ~7,500 ns per search
-  - **Fastest** for non-existent words (krivalla, whispint, zintar, etc.)
-  - Occasionally slower due to hash collisions
-  - Best choice for real-world dictionary lookups
+- **Hash Search**: Strong performance with occasional outliers
+  - Average time: **12,294 ns** (~12 μs) per search
+  - **Fastest** for non-existent words (krivalla, whispint, zintar, drevica, etc.)
+  - Occasionally slower due to hash collisions (e.g., triangle: 58,804 ns, spuddler: 108,458 ns)
+  - Excels at constant-time lookups for most cases
 
-**Key Finding:** Hash search excels at finding non-existent words quickly (constant time failure), while binary search performs better on average for existing words in the sorted dataset. Linear search is impractical for datasets of this size.
+**Key Findings:**
+
+- Binary search is the **overall winner** with an average of **5,990 ns**, making it **2.05x faster** than hash search and **143.75x faster** than linear search
+- Hash search excels at detecting non-existent words quickly (constant-time failure)
+- Linear search is completely impractical for datasets of this size (40,000+ words)
+- For a sorted dictionary dataset, binary search provides the most reliable and consistently fast performance
 
 ---
 
