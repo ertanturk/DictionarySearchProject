@@ -10,6 +10,8 @@ import main.java.utils.analysis.ExecutionTimeFormatter;
 
 public class Test {
   private static volatile int SINK = 0;
+  private final static int WARMUP_RUNS = 10;
+  private final static int ITERATIONS = 10000;
 
   public static void main(String[] args) throws Exception {
     // Loaders
@@ -50,39 +52,39 @@ public class Test {
     for (int i = 0; i < testKeys.length; i++) {
       String key = testKeys[i];
       // Check existence in dictionary
-      isInList = hashSearch.searchInHashTable(key) != null ? 1 : -1;
+      isInList = binarySearch.search(dictKeys, key);
 
       // Alternate the order of searches to minimize caching effects
       if ((i & 1) == 0) {
         // Linear Search
         linearTime = analyzer.runRepeated(() -> {
           SINK = SINK * 31 + linearSearch.search(dictKeys, key);
-        }, 10, 2000);
+        }, WARMUP_RUNS, ITERATIONS);
 
         // Binary Search
         binaryTime = analyzer.runRepeated(() -> {
           SINK = SINK * 31 + binarySearch.search(dictKeys, key);
-        }, 10, 2000);
+        }, WARMUP_RUNS, ITERATIONS);
 
         // Hash Search
         hashTime = analyzer.runRepeated(() -> {
           SINK = SINK * 31 + hashSearch.search(dictKeys, key);
-        }, 10, 2000);
+        }, WARMUP_RUNS, ITERATIONS);
       } else {
         // Hash Search
         hashTime = analyzer.runRepeated(() -> {
           SINK = SINK * 31 + hashSearch.search(dictKeys, key);
-        }, 10, 2000);
+        }, WARMUP_RUNS, ITERATIONS);
 
         // Binary Search
         binaryTime = analyzer.runRepeated(() -> {
           SINK = SINK * 31 + binarySearch.search(dictKeys, key);
-        }, 10, 2000);
+        }, WARMUP_RUNS, ITERATIONS);
 
         // Linear Search
         linearTime = analyzer.runRepeated(() -> {
           SINK = SINK * 31 + linearSearch.search(dictKeys, key);
-        }, 10, 2000);
+        }, WARMUP_RUNS, ITERATIONS);
       }
 
       executionTimes[i][0] = linearTime;
@@ -95,7 +97,7 @@ public class Test {
       System.out.println(output);
     }
     String averageOutput = formatter.formatAverageComparison(executionTimes,
-        new String[] { "Linear Search", "Binary Search", "Hash Search" }, 2000);
+        new String[] { "Linear Search", "Binary Search", "Hash Search" }, ITERATIONS);
     System.out.println(averageOutput);
     System.out.println("Final SINK value to prevent optimization: " + SINK);
   }
