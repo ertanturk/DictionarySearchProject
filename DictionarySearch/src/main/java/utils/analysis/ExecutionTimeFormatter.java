@@ -11,73 +11,70 @@ public class ExecutionTimeFormatter {
   }
 
   public String formatNanoseconds(long nanoseconds) {
-    return String.format("%." + decimalPlaces + "f ns", (double) nanoseconds);
+    double milliseconds = nanoseconds / 1_000_000.0;
+    String formatString = "%." + decimalPlaces + "f ms";
+    return String.format(formatString, milliseconds);
   }
 
   public String formatMilliseconds(double milliseconds) {
-    return String.format("%." + decimalPlaces + "f ms", milliseconds);
+    String formatString = "%." + decimalPlaces + "f ms";
+    return String.format(formatString, milliseconds);
   }
 
   public String formatSeconds(double seconds) {
-    return String.format("%." + decimalPlaces + "f s", seconds);
+    String formatString = "%." + decimalPlaces + "f s";
+    return String.format(formatString, seconds);
   }
 
-  public String formatSummary(String label, long nanoseconds) {
-    double milliseconds = nanoseconds / 1_000_000.0;
-    double seconds = nanoseconds / 1_000_000_000.0;
-
-    return String.format(
-        "%s: %s (%s, %s)",
-        label,
-        formatNanoseconds(nanoseconds),
-        formatMilliseconds(milliseconds),
-        formatSeconds(seconds));
-  }
-
-  public String formatComparison(String[] labels, Long[] timesInNanoseconds) {
-    if (labels == null || timesInNanoseconds == null) {
-      throw new IllegalArgumentException("Labels and times must not be null");
-    }
-    if (labels.length != timesInNanoseconds.length) {
-      throw new IllegalArgumentException("Labels and times must have same length");
-    }
-    if (labels.length == 0) {
-      return "No performance data available.\n";
-    }
-
+  public String formatSummary(long executionTime, String task, String word, int isInList) {
     StringBuilder sb = new StringBuilder();
-
-    long fastestTime = Long.MAX_VALUE;
-    for (long time : timesInNanoseconds) {
-      if (time >= 0 && time < fastestTime) {
-        fastestTime = time;
+    sb.append("----------------------------------------------------------------\n");
+    sb.append("Execution Time for ").append(task);
+    if (word != null && !word.isEmpty()) {
+      if (isInList >= 0) {
+        sb.append(" (Word: '").append(word).append("' exists in the dictionary)");
+      } else if (isInList == -1) {
+        sb.append(" (Word: '").append(word).append("' not exists in the dictionary)");
       }
     }
-
-    if (fastestTime <= 0) {
-      fastestTime = 1;
-    }
-
-    for (int i = 0; i < labels.length; i++) {
-      String label = labels[i];
-      long time = timesInNanoseconds[i];
-
-      if (time == fastestTime) {
-        sb.append(String.format(
-            "%s: %s (FASTEST)\n",
-            label,
-            formatNanoseconds(time)));
-      } else {
-        double ratio = (double) time / fastestTime;
-        sb.append(String.format(
-            "%s: %s (%.2fx slower)\n",
-            label,
-            formatNanoseconds(time),
-            ratio));
-      }
-    }
-
+    sb.append(": ").append(formatMilliseconds(executionTime));
+    sb.append("\n----------------------------------------------------------------\n");
     return sb.toString();
   }
 
+  public String formatComparison(Long[] executionTimes, String[] tasks, String word, int isInList) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("----------------------------------------------------------------\n");
+    sb.append("Execution Time Comparison");
+    if (word != null && !word.isEmpty()) {
+      if (isInList >= 0) {
+        sb.append(" (Word: '").append(word).append("' exists in the dictionary)");
+      } else if (isInList == -1) {
+        sb.append(" (Word: '").append(word).append("' not exists in the dictionary)");
+      }
+    }
+    sb.append(":\n");
+    for (int i = 0; i < tasks.length; i++) {
+      sb.append("- ").append(tasks[i]).append(": ").append(formatMilliseconds(executionTimes[i]))
+          .append(ratioToFastest(executionTimes, i)).append("\n");
+    }
+    sb.append("----------------------------------------------------------------\n");
+    return sb.toString();
+  }
+
+  private String ratioToFastest(Long[] executionTimes, int index) {
+    long fastest = Long.MAX_VALUE;
+    for (long time : executionTimes) {
+      if (time < fastest) {
+        fastest = time;
+      }
+    }
+    if (executionTimes[index] == fastest) {
+      return " (Fastest)";
+    } else {
+      double ratio = (double) executionTimes[index] / fastest;
+      String formatString = " (%.3fx Times Slower)";
+      return String.format(formatString, ratio);
+    }
+  }
 }

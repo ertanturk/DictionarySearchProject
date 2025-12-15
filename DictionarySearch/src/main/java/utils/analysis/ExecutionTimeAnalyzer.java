@@ -21,6 +21,10 @@ public class ExecutionTimeAnalyzer {
   }
 
   public long run(Runnable task) {
+    // JVM warm-up
+    for (int i = 0; i < 5; i++) {
+      task.run();
+    }
     start();
     task.run();
     stop();

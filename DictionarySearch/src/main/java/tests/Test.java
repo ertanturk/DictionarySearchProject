@@ -9,76 +9,64 @@ import main.java.utils.analysis.ExecutionTimeAnalyzer;
 import main.java.utils.analysis.ExecutionTimeFormatter;
 
 public class Test {
-  public static void main(String[] args) {
-    Loader<String, String> txtLoader = new Loader<>("DictionarySearch/data/testWords.txt");
-    Loader<String, String> dicLoader = new Loader<>("DictionarySearch/data/dict.csv");
-    HashTable<String, String> testWordsTable;
-    HashTable<String, String> dicTable;
+  public static void main(String[] args) throws Exception {
+    // Loaders
+    Loader dicLoader = new Loader("DictionarySearch/data/dict.csv");
+    Loader testWLoader = new Loader("DictionarySearch/data/testWords.txt");
+
+    // HashTables
+    HashTable<String, String> dictionary = dicLoader.load();
+    System.out.println("Dictionary loaded with " + dictionary.size() + " entries.");
+    HashTable<String, String> testWords = testWLoader.load();
+    System.out.println("Test words loaded with " + testWords.size() + " entries.");
+
+    // Get keys from testWords
+    String[] testKeys = testWords.getKeys();
+    System.out.println("Testing search for " + testKeys.length + " words...");
+
+    // Get keys from dictionary
+    String[] dictKeys = dictionary.getKeys();
+    System.out.println("Dictionary contains " + dictKeys.length + " unique words.");
+
+    // Searchs
+    BinarySearch<String> binarySearch = new BinarySearch<>();
+    LinearSearch<String> linearSearch = new LinearSearch<>();
+    HashSearch<String> hashSearch = new HashSearch<>(dictionary);
+
+    // Sort dictionary keys for binary search
+    binarySearch.sort(dictKeys, 0, dictKeys.length - 1);
+    System.out.println("Dictionary keys sorted for binary search.");
+
+    // Analyzer & Formatter
     ExecutionTimeAnalyzer analyzer = new ExecutionTimeAnalyzer();
     ExecutionTimeFormatter formatter = new ExecutionTimeFormatter();
-    BinarySearch<String> binarySearch = new BinarySearch<>();
-    HashSearch<String> hashSearch;
-    LinearSearch<String> linearSearch = new LinearSearch<>();
-    try {
-      testWordsTable = txtLoader.load();
-      dicTable = dicLoader.load();
-      hashSearch = new HashSearch<>(dicTable);
-      String[] testKeys = testWordsTable.getKeys();
-      String[] dicKeys = dicTable.getKeys();
-      Long[][] timeLongs = new Long[testKeys.length][3];
-      binarySearch.sort(dicKeys, 0, dicKeys.length - 1);
-      for (int i = 0; i < testKeys.length; i++) {
-        String key = testKeys[i];
-        // Linear Search Test
-        long linearSearchTime = analyzer.run(() -> {
-          linearSearch.search(dicKeys, key);
-        });
+    int isInList = -1;
 
-        // Binary Search Test
-        long binarySearchTime = analyzer.run(() -> {
-          binarySearch.search(dicKeys, key);
-        });
+    // Perform searches and analyze execution times
+    for (String key : testKeys) {
 
-        // Hash Search Test
-        long hashSearchTime = analyzer.run(() -> {
-          hashSearch.search(dicKeys, key);
-        });
+      // Check existence in dictionary
+      isInList = hashSearch.searchInHashTable(key) != null ? 1 : -1;
 
-        System.out.println("Key: " + key);
-        System.out.println(formatter.formatComparison(
-            new String[] { "Linear Search", "Binary Search", "Hash Search" },
-            new Long[] {
-                linearSearchTime,
-                binarySearchTime,
-                hashSearchTime
-            }));
+      // Linear Search
+      long linearTime = analyzer.run(() -> {
+        linearSearch.search(dictKeys, key);
+      });
 
-        timeLongs[i][0] = linearSearchTime;
-        timeLongs[i][1] = binarySearchTime;
-        timeLongs[i][2] = hashSearchTime;
-      }
-      Long linearTotal = 0L;
-      Long binaryTotal = 0L;
-      Long hashTotal = 0L;
-      for (int i = 0; i < timeLongs.length; i++) {
-        linearTotal += timeLongs[i][0];
-        binaryTotal += timeLongs[i][1];
-        hashTotal += timeLongs[i][2];
-      }
+      // Binary Search
+      long binaryTime = analyzer.run(() -> {
+        binarySearch.search(dictKeys, key);
+      });
 
-      linearTotal /= timeLongs.length;
-      binaryTotal /= timeLongs.length;
-      hashTotal /= timeLongs.length;
-      System.out.println("Overall Average Times for Searches: (50 test words) (ns)");
-      System.out.println(formatter.formatComparison(
-          new String[] { "Linear Search", "Binary Search", "Hash Search" },
-          new Long[] {
-              linearTotal,
-              binaryTotal,
-              hashTotal
-          }));
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+      // Hash Search
+      long hashTime = analyzer.run(() -> {
+        hashSearch.search(dictKeys, key);
+      });
+
+      // Format and print results
+      String output = formatter.formatComparison(new Long[] { linearTime, binaryTime, hashTime },
+          new String[] { "Linear Search", "Binary Search", "Hash Search" }, key, isInList);
+      System.out.println(output);
     }
   }
 }

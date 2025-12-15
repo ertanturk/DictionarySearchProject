@@ -9,16 +9,17 @@ import java.io.IOException;
 import main.java.utils.Entry;
 import main.java.utils.HashTable;
 
-enum FileType {
-  TXT,
-  CSV
-}
+public class Loader {
 
-public class Loader<Key extends Comparable<Key>, Value extends Comparable<Value>> {
-  private final String filePath;
-  private final FileType fileType;
-  private final Character delimiter = ',';
-  private HashTable<Key, Value> hashTable;
+  private enum FileType {
+    CSV,
+    TXT,
+  }
+
+  private FileType fileType;
+  private final char delimiter = ',';
+  private String filePath;
+  private HashTable<String, String> hashTable;
 
   public Loader(String filePath) {
     this.filePath = filePath;
@@ -26,18 +27,28 @@ public class Loader<Key extends Comparable<Key>, Value extends Comparable<Value>
     this.hashTable = new HashTable<>();
   }
 
-  public HashTable<Key, Value> load() throws FileNotFoundException, IOException {
-    switch (this.fileType) {
-      case TXT:
-        return loadTxt();
-      case CSV:
-        return loadCsv();
-      default:
-        throw new IllegalArgumentException("Unsupported file type: " + this.fileType);
+  private FileType determineFileType(String filePath) {
+    if (filePath.endsWith(".csv")) {
+      return FileType.CSV;
+    } else if (filePath.endsWith(".txt")) {
+      return FileType.TXT;
+    } else {
+      throw new IllegalArgumentException("Unsupported file type for file: " + filePath);
     }
   }
 
-  public HashTable<Key, Value> loadTxt() throws FileNotFoundException, IOException {
+  public HashTable<String, String> load() throws Exception {
+    switch (fileType) {
+      case CSV:
+        return loadCsv();
+      case TXT:
+        return loadTxt();
+      default:
+        throw new IllegalArgumentException("Unsupported file type for file: " + filePath);
+    }
+  }
+
+  public HashTable<String, String> loadTxt() throws FileNotFoundException, IOException {
     File file = new File(this.filePath);
 
     try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -46,8 +57,8 @@ public class Loader<Key extends Comparable<Key>, Value extends Comparable<Value>
         line = line.trim();
         if (!line.isEmpty()) {
           @SuppressWarnings("unchecked")
-          Key key = (Key) line;
-          Entry<Key, Value> entry = new Entry<>(key, null);
+          String key = line;
+          Entry<String, String> entry = new Entry<>(key, null);
           this.hashTable.put(entry);
         }
       }
@@ -56,102 +67,91 @@ public class Loader<Key extends Comparable<Key>, Value extends Comparable<Value>
     return this.hashTable;
   }
 
-  public HashTable<Key, Value> loadCsv() throws IOException {
-    try (FileReader reader = new FileReader(this.filePath)) {
-      int currentChar;
-      boolean insideQuotes = false;
-      boolean readingKey = true;
-      boolean isFirstRecord = true;
+  public HashTable<String, String> loadCsv() throws IOException {
 
-      StringBuilder keyBuilder = new StringBuilder();
-      StringBuilder valueBuilder = new StringBuilder();
+    enum State {
+      READING_KEY, READING_VALUE
+    }
 
-      while ((currentChar = reader.read()) != -1) {
-        char ch = (char) currentChar;
+    State state = State.READING_KEY;
+    boolean insideQuotes = false;
+    boolean isFirstLine = true;
 
-        if (ch == '"') {
-          insideQuotes = !insideQuotes;
+    StringBuilder keyBuffer = new StringBuilder();
+    StringBuilder valueBuffer = new StringBuilder();
 
-          if (readingKey) {
-            keyBuilder.append(ch);
-          } else {
-            valueBuilder.append(ch);
+    try (BufferedReader reader = new BufferedReader(new FileReader(this.filePath))) {
+      int c;
+      while ((c = reader.read()) != -1) {
+        char ch = (char) c;
+
+        if (isFirstLine) {
+          if (ch == '\n') {
+            isFirstLine = false;
           }
+          continue;
+        }
 
-        } else if (ch == this.delimiter && !insideQuotes) {
-          readingKey = false;
+        switch (state) {
+          case READING_KEY:
+            if (ch == this.delimiter) {
+              state = State.READING_VALUE;
+            } else if (ch != '\r' && ch != '\n') {
+              keyBuffer.append(ch);
+            }
+            break;
 
-        } else if ((ch == '\n' || ch == '\r') && !insideQuotes) {
-          addEntryFromBuilders(keyBuilder, valueBuilder, isFirstRecord);
-          isFirstRecord = false;
-
-          keyBuilder.setLength(0);
-          valueBuilder.setLength(0);
-          readingKey = true;
-
-        } else {
-          if (readingKey) {
-            keyBuilder.append(ch);
-          } else {
-            valueBuilder.append(ch);
-          }
+          case READING_VALUE:
+            if (!insideQuotes) {
+              if (ch == '"') {
+                insideQuotes = true;
+              } else if (ch == '\n') {
+                // Commit entry and reset buffers
+                commitEntry(keyBuffer, valueBuffer);
+                state = State.READING_KEY;
+              } else if (ch != '\r') {
+                // unquoted garbage just append
+                valueBuffer.append(ch);
+              }
+            } else {
+              if (ch == '"') {
+                reader.mark(1);
+                int next = reader.read();
+                if (next == '"') {
+                  // Escaped quote ""
+                  valueBuffer.append('"');
+                } else {
+                  // Closing quote
+                  insideQuotes = false;
+                  reader.reset();
+                }
+              } else {
+                // Inside quotes — just append
+                valueBuffer.append(ch);
+              }
+            }
+            break;
         }
       }
 
-      if (keyBuilder.length() > 0 || valueBuilder.length() > 0) {
-        addEntryFromBuilders(keyBuilder, valueBuilder, isFirstRecord);
+      // Commit last entry if file doesn't end with newline
+      if (keyBuffer.length() > 0 || valueBuffer.length() > 0) {
+        commitEntry(keyBuffer, valueBuffer);
       }
-    }
 
-    return this.hashTable;
-  }
-
-  @SuppressWarnings("unchecked")
-  private void addEntryFromBuilders(StringBuilder keyBuilder,
-      StringBuilder valueBuilder,
-      boolean isFirstRecord) {
-    String rawKey = keyBuilder.toString().trim();
-    String rawValue = valueBuilder.toString().trim();
-
-    if (rawKey.isEmpty() && rawValue.isEmpty()) {
-      // blank line
-      return;
-    }
-
-    String keyStr = unquoteCsvField(rawKey);
-    String valueStr = unquoteCsvField(rawValue);
-
-    if (isFirstRecord &&
-        "word".equalsIgnoreCase(keyStr) &&
-        valueStr.toLowerCase().startsWith("definition")) {
-      return;
-    }
-
-    if (!keyStr.isEmpty() && !valueStr.isEmpty()) {
-      Key key = (Key) keyStr;
-      Value value = (Value) valueStr;
-      Entry<Key, Value> entry = new Entry<>(key, value);
-      this.hashTable.put(entry);
+      return this.hashTable;
     }
   }
 
-  private String unquoteCsvField(String field) {
-    if (field.length() >= 2 &&
-        field.charAt(0) == '"' &&
-        field.charAt(field.length() - 1) == '"') {
-      field = field.substring(1, field.length() - 1);
-    }
-    field = field.replace("\"\"", "\"");
-    return field;
-  }
+  private void commitEntry(StringBuilder keyBuffer, StringBuilder valueBuffer) {
+    String key = keyBuffer.toString().trim();
+    String value = valueBuffer.toString().trim();
 
-  private FileType determineFileType(String filePath) {
-    if (filePath.endsWith(".txt")) {
-      return FileType.TXT;
-    } else if (filePath.endsWith(".csv")) {
-      return FileType.CSV;
-    } else {
-      throw new IllegalArgumentException("Unsupported file type: " + filePath);
+    if (!key.isEmpty()) {
+      this.hashTable.put(new Entry<>(key, value));
     }
+
+    keyBuffer.setLength(0);
+    valueBuffer.setLength(0);
   }
 }

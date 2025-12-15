@@ -113,7 +113,7 @@ public class DictionaryApp extends JFrame {
       binarySearch = new BinarySearch<>();
       linearSearch = new LinearSearch<>();
 
-      Loader<String, String> loader = new Loader<>("DictionarySearch/data/dict.csv");
+      Loader loader = new Loader("DictionarySearch/data/dict.csv");
       hashTable = loader.load();
 
       hashSearch = new HashSearch<>(hashTable);
