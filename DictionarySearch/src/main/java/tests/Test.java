@@ -9,6 +9,8 @@ import main.java.utils.analysis.ExecutionTimeAnalyzer;
 import main.java.utils.analysis.ExecutionTimeFormatter;
 
 public class Test {
+  private static volatile int SINK = 0;
+
   public static void main(String[] args) throws Exception {
     // Loaders
     Loader dicLoader = new Loader("DictionarySearch/data/dict.csv");
@@ -41,32 +43,60 @@ public class Test {
     ExecutionTimeAnalyzer analyzer = new ExecutionTimeAnalyzer();
     ExecutionTimeFormatter formatter = new ExecutionTimeFormatter();
     int isInList = -1;
+    Long[][] executionTimes = new Long[testKeys.length][3];
 
     // Perform searches and analyze execution times
-    for (String key : testKeys) {
-
+    long linearTime, binaryTime, hashTime;
+    for (int i = 0; i < testKeys.length; i++) {
+      String key = testKeys[i];
       // Check existence in dictionary
       isInList = hashSearch.searchInHashTable(key) != null ? 1 : -1;
 
-      // Linear Search
-      long linearTime = analyzer.run(() -> {
-        linearSearch.search(dictKeys, key);
-      });
+      // Alternate the order of searches to minimize caching effects
+      if ((i & 1) == 0) {
+        // Linear Search
+        linearTime = analyzer.runRepeated(() -> {
+          SINK = SINK * 31 + linearSearch.search(dictKeys, key);
+        }, 10, 2000);
 
-      // Binary Search
-      long binaryTime = analyzer.run(() -> {
-        binarySearch.search(dictKeys, key);
-      });
+        // Binary Search
+        binaryTime = analyzer.runRepeated(() -> {
+          SINK = SINK * 31 + binarySearch.search(dictKeys, key);
+        }, 10, 2000);
 
-      // Hash Search
-      long hashTime = analyzer.run(() -> {
-        hashSearch.search(dictKeys, key);
-      });
+        // Hash Search
+        hashTime = analyzer.runRepeated(() -> {
+          SINK = SINK * 31 + hashSearch.search(dictKeys, key);
+        }, 10, 2000);
+      } else {
+        // Hash Search
+        hashTime = analyzer.runRepeated(() -> {
+          SINK = SINK * 31 + hashSearch.search(dictKeys, key);
+        }, 10, 2000);
+
+        // Binary Search
+        binaryTime = analyzer.runRepeated(() -> {
+          SINK = SINK * 31 + binarySearch.search(dictKeys, key);
+        }, 10, 2000);
+
+        // Linear Search
+        linearTime = analyzer.runRepeated(() -> {
+          SINK = SINK * 31 + linearSearch.search(dictKeys, key);
+        }, 10, 2000);
+      }
+
+      executionTimes[i][0] = linearTime;
+      executionTimes[i][1] = binaryTime;
+      executionTimes[i][2] = hashTime;
 
       // Format and print results
       String output = formatter.formatComparison(new Long[] { linearTime, binaryTime, hashTime },
           new String[] { "Linear Search", "Binary Search", "Hash Search" }, key, isInList);
       System.out.println(output);
     }
+    String averageOutput = formatter.formatAverageComparison(executionTimes,
+        new String[] { "Linear Search", "Binary Search", "Hash Search" }, 2000);
+    System.out.println(averageOutput);
+    System.out.println("Final SINK value to prevent optimization: " + SINK);
   }
 }

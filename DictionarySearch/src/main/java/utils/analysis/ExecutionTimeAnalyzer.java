@@ -30,4 +30,16 @@ public class ExecutionTimeAnalyzer {
     stop();
     return getElapsedTimeInNanoseconds();
   }
+
+  public long runRepeated(Runnable task, int warmup, int iterations) {
+    for (int i = 0; i < warmup; i++) {
+      task.run();
+    }
+
+    long start = System.nanoTime();
+    for (int i = 0; i < iterations; i++) {
+      task.run();
+    }
+    return (System.nanoTime() - start) / iterations;
+  }
 }
