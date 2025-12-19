@@ -539,19 +539,20 @@ public class DictionaryApp extends JFrame {
   }
 
   public static void main(String[] args) {
-    // Enable anti-aliasing for better font rendering
-    System.setProperty("awt.useSystemAAFontSettings", "lcd");
+    // Better defaults for rendering
+    System.setProperty("awt.useSystemAAFontSettings", "on");
     System.setProperty("swing.aatext", "true");
 
     SwingUtilities.invokeLater(() -> {
       try {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-      } catch (Exception e) {
-        e.printStackTrace();
+        UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+      } catch (Exception ignored) {
       }
 
       DictionaryApp frame = new DictionaryApp();
+      SwingUtilities.updateComponentTreeUI(frame); // ensure LAF applies to all components
       frame.setVisible(true);
     });
   }
+
 }
