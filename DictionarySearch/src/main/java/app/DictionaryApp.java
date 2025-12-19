@@ -44,13 +44,20 @@ import main.java.utils.analysis.ExecutionTimeFormatter;
 import main.java.utils.features.WordSuggester;
 
 public class DictionaryApp extends JFrame {
-  private HashTable<String, String> hashTable;
-  private String[] dictionaryKeys;
+  // Core data structures
+  private HashTable<String, String> hashTable; // dictionary storage (word -> definition)
+  private String[] dictionaryKeys; // cached keys used by linear/binary search
+
+  // Timing utilities for measuring and formatting search durations
   private ExecutionTimeFormatter timeFormatter;
   private ExecutionTimeAnalyzer timeAnalyzer;
+
+  // Search algorithm implementations
   private BinarySearch<String> binarySearch;
   private LinearSearch<String> linearSearch;
   private HashSearch<String> hashSearch;
+
+  // Suggestion helper used when searches miss
   private WordSuggester wordSuggester;
 
   // Custom fonts
@@ -518,6 +525,7 @@ public class DictionaryApp extends JFrame {
   }
 
   public static void main(String[] args) {
+    // Enable anti-aliasing for better font rendering
     System.setProperty("awt.useSystemAAFontSettings", "lcd");
     System.setProperty("swing.aatext", "true");
 
