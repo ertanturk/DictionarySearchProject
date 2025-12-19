@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -98,8 +99,15 @@ public class DictionaryApp extends JFrame {
 
   private void loadCustomFonts() {
     try {
-      Font geistBold = Font.createFont(Font.TRUETYPE_FONT,
-          new File("DictionarySearch/fonts/GeistMono-Bold.ttf"));
+      InputStream fis = getClass().getClassLoader().getResourceAsStream("DictionarySearch/fonts/GeistMono-Bold.ttf");
+      Font geistBold;
+
+      if (fis != null) {
+        geistBold = Font.createFont(Font.TRUETYPE_FONT, fis);
+      } else {
+        geistBold = Font.createFont(Font.TRUETYPE_FONT,
+            new File("DictionarySearch/fonts/GeistMono-Bold.ttf"));
+      }
       geistMonoBold = geistBold.deriveFont(Font.BOLD, 16f);
 
       GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -150,8 +158,14 @@ public class DictionaryApp extends JFrame {
     getContentPane().setBackground(COLOR_BACKGROUND);
 
     try {
-      ImageIcon icon = new ImageIcon("DictionarySearch/src/main/java/app/icon.png");
-      setIconImage(icon.getImage());
+      java.net.URL iconUrl = getClass().getClassLoader().getResource("DictionarySearch/src/main/java/app/icon.png");
+      if (iconUrl != null) {
+        ImageIcon icon = new ImageIcon(iconUrl);
+        setIconImage(icon.getImage());
+      } else {
+        ImageIcon icon = new ImageIcon("DictionarySearch/src/main/java/app/icon.png");
+        setIconImage(icon.getImage());
+      }
     } catch (Exception e) {
       System.err.println("Error loading icon: " + e.getMessage());
     }

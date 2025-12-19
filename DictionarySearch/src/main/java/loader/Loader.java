@@ -5,6 +5,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 
 import main.java.utils.Entry;
 import main.java.utils.HashTable;
@@ -49,22 +53,42 @@ public class Loader {
   }
 
   public HashTable<String, String> loadTxt() throws FileNotFoundException, IOException {
-    File file = new File(this.filePath);
+    Reader reader = null;
+    try {
+      File file = new File(this.filePath);
+      if (file.exists()) {
+        reader = new FileReader(file);
+      } else {
+        InputStream is = getClass().getClassLoader().getResourceAsStream(this.filePath);
+        if (is == null) {
+          throw new FileNotFoundException("File not found: " + this.filePath);
+        }
+        reader = new InputStreamReader(is, StandardCharsets.UTF_8);
+      }
 
-    try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-      String line;
-      while ((line = br.readLine()) != null) {
-        line = line.trim();
-        if (!line.isEmpty()) {
-          @SuppressWarnings("unchecked")
-          String key = line;
-          Entry<String, String> entry = new Entry<>(key, null);
-          this.hashTable.put(entry);
+      try (BufferedReader br = new BufferedReader(reader)) {
+        String line;
+        while ((line = br.readLine()) != null) {
+          line = line.trim();
+          if (!line.isEmpty()) {
+            @SuppressWarnings("unchecked")
+            String key = line;
+            Entry<String, String> entry = new Entry<>(key, null);
+            this.hashTable.put(entry);
+          }
+        }
+      }
+
+      return this.hashTable;
+    } finally {
+      if (reader != null) {
+        try {
+          reader.close();
+        } catch (IOException e) {
+          // ignore
         }
       }
     }
-
-    return this.hashTable;
   }
 
   public HashTable<String, String> loadCsv() throws IOException {
@@ -80,66 +104,88 @@ public class Loader {
     StringBuilder keyBuffer = new StringBuilder();
     StringBuilder valueBuffer = new StringBuilder();
 
-    try (BufferedReader reader = new BufferedReader(new FileReader(this.filePath))) {
-      int c;
-      while ((c = reader.read()) != -1) {
-        char ch = (char) c;
-
-        if (isFirstLine) {
-          if (ch == '\n') {
-            isFirstLine = false;
-          }
-          continue;
+    Reader r = null;
+    try {
+      File file = new File(this.filePath);
+      if (file.exists()) {
+        r = new FileReader(file);
+      } else {
+        InputStream is = getClass().getClassLoader().getResourceAsStream(this.filePath);
+        if (is == null) {
+          throw new FileNotFoundException("File not found: " + this.filePath);
         }
+        r = new InputStreamReader(is, StandardCharsets.UTF_8);
+      }
 
-        switch (state) {
-          case READING_KEY:
-            if (ch == this.delimiter) {
-              state = State.READING_VALUE;
-            } else if (ch != '\r' && ch != '\n') {
-              keyBuffer.append(ch);
+      try (BufferedReader reader = new BufferedReader(r)) {
+        int c;
+        while ((c = reader.read()) != -1) {
+          char ch = (char) c;
+
+          if (isFirstLine) {
+            if (ch == '\n') {
+              isFirstLine = false;
             }
-            break;
+            continue;
+          }
 
-          case READING_VALUE:
-            if (!insideQuotes) {
-              if (ch == '"') {
-                insideQuotes = true;
-              } else if (ch == '\n') {
-                // Commit entry and reset buffers
-                commitEntry(keyBuffer, valueBuffer);
-                state = State.READING_KEY;
-              } else if (ch != '\r') {
-                // unquoted garbage just append
-                valueBuffer.append(ch);
+          switch (state) {
+            case READING_KEY:
+              if (ch == this.delimiter) {
+                state = State.READING_VALUE;
+              } else if (ch != '\r' && ch != '\n') {
+                keyBuffer.append(ch);
               }
-            } else {
-              if (ch == '"') {
-                reader.mark(1);
-                int next = reader.read();
-                if (next == '"') {
-                  // Escaped quote ""
-                  valueBuffer.append('"');
-                } else {
-                  // Closing quote
-                  insideQuotes = false;
-                  reader.reset();
+              break;
+
+            case READING_VALUE:
+              if (!insideQuotes) {
+                if (ch == '"') {
+                  insideQuotes = true;
+                } else if (ch == '\n') {
+                  // Commit entry and reset buffers
+                  commitEntry(keyBuffer, valueBuffer);
+                  state = State.READING_KEY;
+                } else if (ch != '\r') {
+                  // unquoted garbage just append
+                  valueBuffer.append(ch);
                 }
               } else {
-                // Inside quotes — just append
-                valueBuffer.append(ch);
+                if (ch == '"') {
+                  reader.mark(1);
+                  int next = reader.read();
+                  if (next == '"') {
+                    // Escaped quote ""
+                    valueBuffer.append('"');
+                  } else {
+                    // Closing quote
+                    insideQuotes = false;
+                    reader.reset();
+                  }
+                } else {
+                  // Inside quotes — just append
+                  valueBuffer.append(ch);
+                }
               }
-            }
-            break;
+              break;
+          }
+        }
+
+        // Commit last entry if file doesn't end with newline
+        if (keyBuffer.length() > 0 || valueBuffer.length() > 0) {
+          commitEntry(keyBuffer, valueBuffer);
+        }
+
+        return this.hashTable;
+      }
+    } finally {
+      if (r != null) {
+        try {
+          r.close();
+        } catch (IOException e) {
+          // ignore
         }
       }
-
-      // Commit last entry if file doesn't end with newline
-      if (keyBuffer.length() > 0 || valueBuffer.length() > 0) {
-        commitEntry(keyBuffer, valueBuffer);
-      }
-
-      return this.hashTable;
     }
   }
 
