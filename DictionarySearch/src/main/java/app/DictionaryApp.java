@@ -107,7 +107,7 @@ public class DictionaryApp extends JFrame {
 
   private void initializeData() {
     try {
-      timeFormatter = new ExecutionTimeFormatter(4);
+      timeFormatter = new ExecutionTimeFormatter();
       timeAnalyzer = new ExecutionTimeAnalyzer();
 
       binarySearch = new BinarySearch<>();
