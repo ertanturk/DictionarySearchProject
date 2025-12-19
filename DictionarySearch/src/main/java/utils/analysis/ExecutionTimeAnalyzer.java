@@ -32,6 +32,7 @@ public class ExecutionTimeAnalyzer {
   }
 
   public long runRepeated(Runnable task, int warmup, int iterations) {
+    // JVM warm-up
     for (int i = 0; i < warmup; i++) {
       task.run();
     }
