@@ -1,10 +1,10 @@
 package main.java.search;
 
-public class LinearSearch<T extends Comparable<T>> implements Search<T> {
+public class LinearSearch implements Search {
   @Override
-  public int search(T[] array, T target) {
+  public int search(Object[][] array, Object target) {
     for (int i = 0; i < array.length; i++) {
-      if (array[i].compareTo(target) == 0) {
+      if (array[i][0].equals(target)) {
         return i;
       }
     }

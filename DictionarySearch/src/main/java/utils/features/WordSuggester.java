@@ -13,9 +13,10 @@ public class WordSuggester {
   public ArrayList<String> suggest(String word) {
     int wordLength = word.length();
     ArrayList<String> suggestions = new ArrayList<>();
-    String[] keys = dictionary.getKeys();
+    Object[][] keys = dictionary.getKeyValuePairs();
 
-    for (String key : keys) {
+    for (Object[] keyValuePair : keys) {
+      String key = (String) keyValuePair[0];
       if (key.length() == wordLength) {
         int differences = 0;
         for (int i = 0; i < wordLength; i++) {
@@ -43,8 +44,9 @@ public class WordSuggester {
 
   public boolean hasSuggestions(String word) {
     int wordLength = word.length();
-    String[] keys = dictionary.getKeys();
-    for (String key : keys) {
+    Object[][] keys = dictionary.getKeyValuePairs();
+    for (Object[] keyValuePair : keys) {
+      String key = (String) keyValuePair[0];
       if (key.length() == wordLength) {
         int differences = 0;
         for (int i = 0; i < wordLength; i++) {

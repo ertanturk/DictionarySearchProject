@@ -47,16 +47,16 @@ import main.java.utils.features.WordSuggester;
 public class DictionaryApp extends JFrame {
   // Core data structures
   private HashTable<String, String> hashTable; // dictionary storage (word -> definition)
-  private String[] dictionaryKeys; // cached keys used by linear/binary search
+  private Object[][] dictionaryKeys; // cached keys used by linear/binary search
 
   // Timing utilities for measuring and formatting search durations
   private ExecutionTimeFormatter timeFormatter;
   private ExecutionTimeAnalyzer timeAnalyzer;
 
   // Search algorithm implementations
-  private BinarySearch<String> binarySearch;
-  private LinearSearch<String> linearSearch;
-  private HashSearch<String> hashSearch;
+  private BinarySearch binarySearch;
+  private LinearSearch linearSearch;
+  private HashSearch hashSearch;
 
   // Suggestion helper used when searches miss
   private WordSuggester wordSuggester;
@@ -80,7 +80,6 @@ public class DictionaryApp extends JFrame {
   // Color palette for the UI
   private final Color COLOR_PRIMARY = new Color(15, 23, 42);
   private final Color COLOR_ACCENT = new Color(99, 102, 241);
-  private final Color COLOR_ACCENT_HOVER = new Color(79, 70, 229);
   private final Color COLOR_BACKGROUND = new Color(248, 250, 252);
   private final Color COLOR_CARD = new Color(255, 255, 255);
   private final Color COLOR_BORDER = new Color(226, 232, 240);
@@ -125,16 +124,16 @@ public class DictionaryApp extends JFrame {
       timeFormatter = new ExecutionTimeFormatter();
       timeAnalyzer = new ExecutionTimeAnalyzer();
 
-      binarySearch = new BinarySearch<>();
-      linearSearch = new LinearSearch<>();
+      binarySearch = new BinarySearch();
+      linearSearch = new LinearSearch();
 
       Loader loader = new Loader("DictionarySearch/data/dict.csv");
       hashTable = loader.load();
 
-      hashSearch = new HashSearch<>(hashTable);
+      hashSearch = new HashSearch(hashTable);
       wordSuggester = new WordSuggester(hashTable);
 
-      dictionaryKeys = hashTable.getKeys();
+      dictionaryKeys = hashTable.getKeyValuePairs();
 
       // Keys need to be sorted for binary search to work
       binarySearch.sort(dictionaryKeys, 0, dictionaryKeys.length - 1);
@@ -407,7 +406,7 @@ public class DictionaryApp extends JFrame {
       });
 
       if (foundIndex[0] != -1) {
-        defResult = hashTable.get(searchWord);
+        defResult = dictionaryKeys[foundIndex[0]][1].toString();
         wordFound = true;
       } else {
         defResult = "Word not found in dictionary.";
@@ -422,7 +421,7 @@ public class DictionaryApp extends JFrame {
       });
 
       if (foundIndex[0] != -1) {
-        defResult = hashTable.get(searchWord);
+        defResult = dictionaryKeys[foundIndex[0]][1].toString();
         wordFound = true;
       } else {
         defResult = "Word not found in dictionary.";

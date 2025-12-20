@@ -25,17 +25,17 @@ public class Test {
     System.out.println("Test words loaded with " + testWords.size() + " entries.");
 
     // Get keys from testWords
-    String[] testKeys = testWords.getKeys();
+    Object[][] testKeys = testWords.getKeyValuePairs();
     System.out.println("Testing search for " + testKeys.length + " words...");
 
     // Get keys from dictionary
-    String[] dictKeys = dictionary.getKeys();
+    Object[][] dictKeys = dictionary.getKeyValuePairs();
     System.out.println("Dictionary contains " + dictKeys.length + " unique words.");
 
     // Searchs
-    BinarySearch<String> binarySearch = new BinarySearch<>();
-    LinearSearch<String> linearSearch = new LinearSearch<>();
-    HashSearch<String> hashSearch = new HashSearch<>(dictionary);
+    BinarySearch binarySearch = new BinarySearch();
+    LinearSearch linearSearch = new LinearSearch();
+    HashSearch hashSearch = new HashSearch(dictionary);
 
     // Sort dictionary keys for binary search
     binarySearch.sort(dictKeys, 0, dictKeys.length - 1);
@@ -50,7 +50,7 @@ public class Test {
     // Perform searches and analyze execution times
     long linearTime, binaryTime, hashTime;
     for (int i = 0; i < testKeys.length; i++) {
-      String key = testKeys[i];
+      String key = testKeys[i][0].toString().toLowerCase();
       // Check existence in dictionary
       isInList = binarySearch.search(dictKeys, key);
 
@@ -94,6 +94,8 @@ public class Test {
       // Format and print results
       String output = formatter.formatComparison(new Long[] { linearTime, binaryTime, hashTime },
           new String[] { "Linear Search", "Binary Search", "Hash Search" }, key, isInList);
+
+      System.out.println("\nTest case " + (i + 1) + "/" + testKeys.length + ":");
       System.out.println(output);
     }
     String averageOutput = formatter.formatAverageComparison(executionTimes,

@@ -1,7 +1,5 @@
 package main.java.utils;
 
-import java.lang.reflect.Array;
-
 public class HashTable<Key extends Comparable<Key>, Value extends Comparable<Value>> {
   private Entry<Key, Value>[] table;
   private int capacity = 16;
@@ -135,32 +133,20 @@ public class HashTable<Key extends Comparable<Key>, Value extends Comparable<Val
     }
   }
 
-  public Key[] getKeys() {
-    Class<?> keyClass = null;
-    for (int i = 0; i < this.capacity; i++) {
-      if (this.table[i] != null) {
-        keyClass = this.table[i].getKey().getClass();
-        break;
-      }
-    }
-
-    if (keyClass == null) {
-      @SuppressWarnings("unchecked")
-      Key[] empty = (Key[]) new Comparable[0];
-      return empty;
-    }
-
-    @SuppressWarnings("unchecked")
-    Key[] keys = (Key[]) Array.newInstance(keyClass, this.size);
+  public Object[][] getKeyValuePairs() {
+    Object[][] pairs = new Object[this.size][2];
     int index = 0;
+
     for (int i = 0; i < this.capacity; i++) {
       Entry<Key, Value> current = this.table[i];
       while (current != null) {
-        keys[index++] = current.getKey();
+        pairs[index][0] = current.getKey().toString().toLowerCase();
+        pairs[index][1] = current.getValue();
+        index++;
         current = current.getNext();
       }
     }
-    return keys;
+    return pairs;
   }
 
   @Override

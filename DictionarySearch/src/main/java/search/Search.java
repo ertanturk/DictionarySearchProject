@@ -1,5 +1,5 @@
 package main.java.search;
 
-public interface Search<T extends Comparable<T>> {
-  int search(T[] array, T target);
+public interface Search {
+  int search(Object[][] array, Object target);
 }

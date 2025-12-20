@@ -71,7 +71,6 @@ public class Loader {
         while ((line = br.readLine()) != null) {
           line = line.trim();
           if (!line.isEmpty()) {
-            @SuppressWarnings("unchecked")
             String key = line;
             Entry<String, String> entry = new Entry<>(key, null);
             this.hashTable.put(entry);
