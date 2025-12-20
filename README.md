@@ -49,6 +49,25 @@ BinarySearch.search(sortedArray, target)
 
 ---
 
+#### Key-Value Export
+
+```java
+public Object[][] getKeyValuePairs()
+```
+
+- Returns an `Object[][]` where each row is a 2-element array: `[keyLowerCase, value]`.
+- Implemented as `Object[][]` because Java does not allow creating arrays of generic parameterized types.
+- Common use: populating Swing tables or other UI components that expect `Object[][]` data.
+
+Example:
+
+```java
+HashTable<String, String> ht = loader.load();
+Object[][] pairs = ht.getKeyValuePairs();
+// pairs[i][0] -> String (lowercased key)
+// pairs[i][1] -> String (value)
+```
+
 ### ▶️ Hash Table _(Custom Implementation)_
 
 ```java
