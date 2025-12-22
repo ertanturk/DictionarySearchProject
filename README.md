@@ -155,7 +155,7 @@ All implementations use **Java Generics** to ensure type safety.
 
 ### ⏱️ Performance Analysis
 
-- **ExecutionTimeAnalyzer** — measures search performance in nanoseconds
+- **ExecutionTimeAnalyzer** — measures search performance in ms
 - **ExecutionTimeFormatter** — formats timing results with configurable precision
 - Real-time display of algorithm execution time
 
@@ -230,7 +230,7 @@ The `Test.java` class compares the performance of all three search algorithms ag
 
 ### Sample Output (representative)
 
-The `Test.java` harness now uses a warmup of `10` runs and `10000` iterations; reported numbers are the average per-iteration time (nanoseconds converted to milliseconds in the report). Below are a few representative outputs captured from a run:
+The `Test.java` harness now uses a warmup of `10` runs and `10000` iterations; reported numbers are the average per-iteration time. Below are a few representative outputs captured from a run:
 
 ```text
 ----------------------------------------------------------------
